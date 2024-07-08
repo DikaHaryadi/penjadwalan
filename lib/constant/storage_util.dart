@@ -1,11 +1,12 @@
+import 'package:example/screens/berita.dart';
 import 'package:example/screens/manajer/homepage_manajer.dart';
-import 'package:example/screens/manajer/profile.dart';
+import 'package:example/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../screens/driver/homepage_driver.dart';
-import '../screens/driver/profile_driver.dart';
+import '../utils/loader/snackbar.dart';
 
 class StorageUtil {
   final prefs = GetStorage();
@@ -45,19 +46,33 @@ class StorageUtil {
   }
 
   final selectedIndex = 0.obs;
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<Widget> widgetOptionsManajer = const [
     HomepageManajer(),
-    ProfileManajer(),
+    BeritaScreen(),
+    ProfileScreen(),
   ];
 
   List<Widget> widgetOptionsDriver = const [
     HomepageDriver(),
-    ProfileDriver(),
+    BeritaScreen(),
+    ProfileScreen(),
   ];
 
   onItemTapped(int index) {
     selectedIndex.value = index;
+  }
+
+  void logout() {
+    prefs.remove('Name');
+    prefs.remove('Telp');
+    prefs.remove('Email');
+    prefs.remove('Image');
+    prefs.remove('Roles');
+    Get.offAllNamed('/');
+    SnackbarLoader.successSnackBar(
+      title: 'Logged Out',
+      message: 'You have been logged out successfully.',
+    );
   }
 }

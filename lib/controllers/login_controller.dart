@@ -18,6 +18,7 @@ class LoginController extends GetxController {
   final passwordController = TextEditingController();
 
   final storageUtil = StorageUtil();
+  final internetController = Get.put(InternetController());
 
   @override
   void onInit() {
@@ -28,10 +29,6 @@ class LoginController extends GetxController {
   }
 
   Future<void> emailAndPasswordSignIn() async {
-    if (!loginFromKey.currentState!.validate()) {
-      return;
-    }
-
     showDialog(
       context: Get.overlayContext!,
       barrierDismissible: false,
@@ -45,16 +42,18 @@ class LoginController extends GetxController {
       ),
     );
 
-    final internetController = Get.put(InternetController());
-    await Future.delayed(const Duration(milliseconds: 100));
+    if (!loginFromKey.currentState!.validate()) {
+      return;
+    }
 
-    if (!internetController.isConnectedToInternet.value) {
+    if (internetController.isConnectedToInternet.value == false) {
       Navigator.of(Get.overlayContext!).pop();
+      print('internet gangguan');
       SnackbarLoader.errorSnackBar(
         title: 'No Internet',
         message: 'Please check your internet connection and try again.',
       );
-      return;
+      return; // Hentikan eksekusi jika tidak ada koneksi internet
     }
 
     final userRepo = Get.put(LoginRepository());
@@ -98,18 +97,5 @@ class LoginController extends GetxController {
       SnackbarLoader.errorSnackBar(
           title: 'Gagal😒', message: 'Email atau password tidak ditemukan🤦');
     }
-  }
-
-  void logout() {
-    storageUtil.prefs.remove('Name');
-    storageUtil.prefs.remove('Telp');
-    storageUtil.prefs.remove('Email');
-    storageUtil.prefs.remove('Image');
-    storageUtil.prefs.remove('Roles');
-    Get.offAllNamed('/');
-    SnackbarLoader.successSnackBar(
-      title: 'Logged Out',
-      message: 'You have been logged out successfully.',
-    );
   }
 }
