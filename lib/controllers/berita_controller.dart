@@ -1,5 +1,5 @@
 import 'package:example/models/berita_model.dart';
-import 'package:example/repo/berita_repo.dart';
+import 'package:example/repository/berita_repo.dart';
 import 'package:get/get.dart';
 
 class BeritaController extends GetxController {

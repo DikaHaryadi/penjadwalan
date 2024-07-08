@@ -55,16 +55,4 @@ class UserModel {
       return UserModel.empty();
     }
   }
-
-  // Method to convert JSON into UserModel instance
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'] ?? '',
-      name: json['Name'] ?? '',
-      telp: json['Telp'] ?? '',
-      email: json['Email'] ?? '',
-      image: json['Image'] ?? '',
-      roles: json['Roles'] ?? '',
-    );
-  }
 }

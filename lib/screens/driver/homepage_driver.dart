@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/constant/custom_size.dart';
 import 'package:example/constant/storage_util.dart';
+import 'package:example/models/event_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../controllers/calendar_controller.dart';
-import '../../utils/event_calendar.dart';
 
 class HomepageDriver extends StatelessWidget {
   const HomepageDriver({super.key});
@@ -85,22 +85,28 @@ class HomepageDriver extends StatelessWidget {
           Expanded(
             child: Obx(() => ListView.builder(
                   itemCount: controller.selectedEvents.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
+                    final events = controller.selectedEvents[index];
                     return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        onTap: () =>
-                            print('${controller.selectedEvents[index]}'),
-                        title: Text('${controller.selectedEvents[index]}'),
-                      ),
-                    );
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 4.0,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(events.namaUsaha),
+                            ),
+                            Text(events.alamat),
+                            Text(events.harga)
+                          ],
+                        ));
                   },
                 )),
           ),

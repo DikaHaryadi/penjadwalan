@@ -1,8 +1,10 @@
-import 'package:example/utils/event_calendar.dart';
+import 'package:example/repository/calendar_repo.dart';
+import 'package:example/models/event_calendar.dart';
 import 'package:get/get.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class TableEventsController extends GetxController {
+  final CalendarRepository _calendarRepository = CalendarRepository();
   var selectedEvents = <Event>[].obs;
   var calendarFormat = CalendarFormat.month.obs;
   var rangeSelectionMode = RangeSelectionMode.toggledOff.obs;
@@ -10,15 +12,19 @@ class TableEventsController extends GetxController {
   var selectedDay = Rx<DateTime?>(DateTime.now());
   var rangeStart = Rx<DateTime?>(null);
   var rangeEnd = Rx<DateTime?>(null);
+  var events = <Event>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    selectedEvents.value = getEventsForDay(selectedDay.value!);
+    _calendarRepository.getEvents().listen((eventList) {
+      events.value = eventList;
+      selectedEvents.value = getEventsForDay(selectedDay.value!);
+    });
   }
 
   List<Event> getEventsForDay(DateTime day) {
-    return kEvents[day] ?? [];
+    return events.where((event) => isSameDay(event.date, day)).toList();
   }
 
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
