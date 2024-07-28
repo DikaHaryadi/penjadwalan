@@ -102,7 +102,7 @@ class HomepageDriver extends StatelessWidget {
                                       actions: [
                                         TextButton(
                                           onPressed: () => Get.back(),
-                                          child: Text('Batalkan'),
+                                          child: const Text('Batalkan'),
                                         ),
                                         TextButton(
                                           onPressed: () async {
@@ -113,7 +113,7 @@ class HomepageDriver extends StatelessWidget {
                                             Navigator.of(Get.overlayContext!)
                                                 .pop();
                                           },
-                                          child: Text('Konfirmasi'),
+                                          child: const Text('Konfirmasi'),
                                         )
                                       ],
                                       content: Column(
@@ -137,7 +137,7 @@ class HomepageDriver extends StatelessWidget {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Icon(Iconsax.mobile),
+                                                  const Icon(Iconsax.mobile),
                                                   const SizedBox(
                                                       width: CustomSize.sm),
                                                   Text(events.telp)
@@ -145,7 +145,7 @@ class HomepageDriver extends StatelessWidget {
                                               ),
                                               Row(
                                                 children: [
-                                                  Icon(Iconsax.timer),
+                                                  const Icon(Iconsax.timer),
                                                   const SizedBox(
                                                       width: CustomSize.sm),
                                                   Text(events.waktu)
@@ -160,7 +160,8 @@ class HomepageDriver extends StatelessWidget {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Icon(Iconsax.receipt_item),
+                                                  const Icon(
+                                                      Iconsax.receipt_item),
                                                   const SizedBox(
                                                       width: CustomSize.sm),
                                                   Text(events.jenisLimbah)
@@ -168,7 +169,7 @@ class HomepageDriver extends StatelessWidget {
                                               ),
                                               Row(
                                                 children: [
-                                                  Icon(Iconsax.graph),
+                                                  const Icon(Iconsax.graph),
                                                   const SizedBox(
                                                       width: CustomSize.sm),
                                                   Text(events.jumlahLimbah)
@@ -263,14 +264,14 @@ class HomepageDriver extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Iconsax.mobile),
+                                      const Icon(Iconsax.mobile),
                                       const SizedBox(width: CustomSize.sm),
                                       Text(events.telp)
                                     ],
                                   ),
                                   Row(
                                     children: [
-                                      Icon(Iconsax.timer),
+                                      const Icon(Iconsax.timer),
                                       const SizedBox(width: CustomSize.sm),
                                       Text(events.waktu)
                                     ],
@@ -284,14 +285,14 @@ class HomepageDriver extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Iconsax.receipt_item),
+                                      const Icon(Iconsax.receipt_item),
                                       const SizedBox(width: CustomSize.sm),
                                       Text(events.jenisLimbah)
                                     ],
                                   ),
                                   Row(
                                     children: [
-                                      Icon(Iconsax.graph),
+                                      const Icon(Iconsax.graph),
                                       const SizedBox(width: CustomSize.sm),
                                       Text(events.jumlahLimbah)
                                     ],

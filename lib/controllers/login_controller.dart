@@ -18,7 +18,6 @@ class LoginController extends GetxController {
   final passwordController = TextEditingController();
 
   final storageUtil = StorageUtil();
-  final internetController = Get.put(InternetController());
 
   @override
   void onInit() {
@@ -46,14 +45,10 @@ class LoginController extends GetxController {
       return;
     }
 
-    if (internetController.isConnectedToInternet.value == false) {
+    final isConnected = await InternetCheckerController.instance.isConnected();
+    if (!isConnected) {
       Navigator.of(Get.overlayContext!).pop();
-      print('internet gangguan');
-      SnackbarLoader.errorSnackBar(
-        title: 'No Internet',
-        message: 'Please check your internet connection and try again.',
-      );
-      return; // Hentikan eksekusi jika tidak ada koneksi internet
+      return;
     }
 
     final userRepo = Get.put(LoginRepository());

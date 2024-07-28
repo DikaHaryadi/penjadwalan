@@ -5,6 +5,7 @@ import 'package:example/controllers/calendar_controller.dart';
 import 'package:example/screens/manajer/kartu_manajer.dart';
 import 'package:example/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -208,7 +209,7 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                           actions: [
                                             TextButton(
                                                 onPressed: () => Get.back(),
-                                                child: Text('Batalkan')),
+                                                child: const Text('Batalkan')),
                                             TextButton(
                                                 onPressed: () async {
                                                   await tableController
@@ -217,7 +218,7 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                                           jadwal.status);
                                                   setState(() {});
                                                 },
-                                                child: Text('Setujui'))
+                                                child: const Text('Setujui'))
                                           ],
                                           title: Text(
                                             'Konfirmasi Penyetujuan Limbah',
@@ -254,7 +255,8 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                                             .textTheme
                                                             .titleMedium,
                                                         children: [
-                                                          TextSpan(text: ' | '),
+                                                          const TextSpan(
+                                                              text: ' | '),
                                                           TextSpan(
                                                               text: jadwal
                                                                   .jumlahLimbah,
@@ -285,7 +287,8 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                                             .textTheme
                                                             .titleMedium,
                                                         children: [
-                                                          TextSpan(text: ' | '),
+                                                          const TextSpan(
+                                                              text: ' | '),
                                                           TextSpan(
                                                               text: DateFormat(
                                                                       'dd MMM yyyy')
@@ -367,7 +370,7 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                                 .textTheme
                                                 .titleMedium,
                                             children: [
-                                              TextSpan(text: ' | '),
+                                              const TextSpan(text: ' | '),
                                               TextSpan(
                                                   text: jadwal.jumlahLimbah,
                                                   style: Theme.of(context)
@@ -386,23 +389,23 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      RichText(
-                                        text: TextSpan(
-                                            text: 'Tgl',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium,
-                                            children: [
-                                              TextSpan(text: ' | '),
-                                              TextSpan(
-                                                  text:
-                                                      DateFormat('dd MMM yyyy')
-                                                          .format(jadwal.date!),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium)
-                                            ]),
-                                      ),
+                                      // RichText(
+                                      //   text: TextSpan(
+                                      //       text: 'Tgl',
+                                      //       style: Theme.of(context)
+                                      //           .textTheme
+                                      //           .titleMedium,
+                                      //       children: [
+                                      //         const TextSpan(text: ' | '),
+                                      //         TextSpan(
+                                      //             text:
+                                      //                 DateFormat('dd MMM yyyy')
+                                      //                     .format(jadwal.date!),
+                                      //             style: Theme.of(context)
+                                      //                 .textTheme
+                                      //                 .bodyMedium)
+                                      //       ]),
+                                      // ),
                                       Text(jadwal.telp,
                                           style: Theme.of(context)
                                               .textTheme

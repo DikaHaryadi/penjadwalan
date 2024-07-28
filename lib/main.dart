@@ -1,4 +1,5 @@
 import 'package:example/constant/route.dart';
+import 'package:example/controllers/internet_checker_controller.dart';
 import 'package:example/firebase_options.dart';
 import 'package:example/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,14 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: const [Locale('en'), Locale('id')],
       getPages: AppRoutes.routes(),
+      initialBinding: InitialBindings(),
     );
+  }
+}
+
+class InitialBindings implements Bindings {
+  @override
+  void dependencies() {
+    Get.put(InternetCheckerController());
   }
 }
