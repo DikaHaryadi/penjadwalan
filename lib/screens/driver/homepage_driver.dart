@@ -6,6 +6,7 @@ import 'package:example/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:lottie/lottie.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../controllers/calendar_controller.dart';
@@ -95,154 +96,166 @@ class HomepageDriver extends StatelessWidget {
                 ),
               )),
           const SizedBox(height: 8.0),
-          Obx(() => ListView.builder(
-                itemCount: controller.selectedEvents.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final events = controller.selectedEvents[index];
-                  return GestureDetector(
-                    onTap: () {
-                      events.status == '1'
-                          ? showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return AlertDialog(
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Get.back(),
-                                        child: const Text('Batalkan'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          await controller.editStatusByTanggal(
-                                              events.date!, events.status);
-                                          Navigator.of(Get.overlayContext!)
-                                              .pop();
-                                        },
-                                        child: const Text('Konfirmasi'),
-                                      )
-                                    ],
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        ListTile(
-                                          title: Text(
-                                            events.namaUsaha,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headlineSmall,
-                                          ),
+          Obx(() => controller.selectedEvents.isEmpty
+              ? Column(
+                  children: [
+                    Lottie.asset('assets/animations/not_avaiable.json',
+                        width: MediaQuery.of(context).size.width / 2),
+                    Text('Jadwal Tidak Ditemukan',
+                        style: Theme.of(context).textTheme.headlineMedium)
+                  ],
+                )
+              : ListView.builder(
+                  itemCount: controller.selectedEvents.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final events = controller.selectedEvents[index];
+                    return GestureDetector(
+                      onTap: () {
+                        events.status == '1'
+                            ? showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) {
+                                  return AlertDialog(
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Get.back(),
+                                          child: const Text('Batalkan'),
                                         ),
-                                        Text(events.alamat),
-                                        const SizedBox(height: CustomSize.sm),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                const Icon(Iconsax.mobile),
-                                                const SizedBox(
-                                                    width: CustomSize.sm),
-                                                Text(events.telp)
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                const Icon(Iconsax.timer),
-                                                const SizedBox(
-                                                    width: CustomSize.sm),
-                                                Text(events.waktu)
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: CustomSize.sm),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                const Icon(
-                                                    Iconsax.receipt_item),
-                                                const SizedBox(
-                                                    width: CustomSize.sm),
-                                                Text(events.jenisLimbah)
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                const Icon(Iconsax.graph),
-                                                const SizedBox(
-                                                    width: CustomSize.sm),
-                                                Text(
-                                                    '${events.jumlahLimbah} drum')
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: CustomSize.sm),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Driver',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge,
-                                            ),
-                                            const SizedBox(
-                                                width: CustomSize.sm),
-                                            Text(events.driver)
-                                          ],
-                                        ),
-                                        const SizedBox(height: CustomSize.sm),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Plat Nomor',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge,
-                                            ),
-                                            const SizedBox(
-                                                width: CustomSize.sm),
-                                            Text(events.platNomer)
-                                          ],
-                                        ),
-                                        const SizedBox(height: CustomSize.md),
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(
-                                            events.status == '0'
-                                                ? 'Belum Disetujui Manajer'
-                                                : events.status == '1'
-                                                    ? 'Belum Diangkut'
-                                                    : 'Telah Diangkut',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium
-                                                ?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    color:
-                                                        (events.status == '0' ||
-                                                                events.status ==
-                                                                    '1')
-                                                            ? AppColors.error
-                                                            : Colors.green),
-                                          ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            await controller
+                                                .editStatusByTanggal(
+                                                    events.date!,
+                                                    events.status);
+                                            Navigator.of(Get.overlayContext!)
+                                                .pop();
+                                          },
+                                          child: const Text('Konfirmasi'),
                                         )
                                       ],
-                                    ));
-                              },
-                            )
-                          : null;
-                    },
-                    child: Container(
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          ListTile(
+                                            title: Text(
+                                              events.namaUsaha,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall,
+                                            ),
+                                          ),
+                                          Text(events.alamat),
+                                          const SizedBox(height: CustomSize.sm),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Icon(Iconsax.mobile),
+                                                  const SizedBox(
+                                                      width: CustomSize.sm),
+                                                  Text(events.telp)
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Icon(Iconsax.timer),
+                                                  const SizedBox(
+                                                      width: CustomSize.sm),
+                                                  Text(events.waktu)
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: CustomSize.sm),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                      Iconsax.receipt_item),
+                                                  const SizedBox(
+                                                      width: CustomSize.sm),
+                                                  Text(events.jenisLimbah)
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Icon(Iconsax.graph),
+                                                  const SizedBox(
+                                                      width: CustomSize.sm),
+                                                  Text(
+                                                      '${events.jumlahLimbah} drum')
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: CustomSize.sm),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Driver',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge,
+                                              ),
+                                              const SizedBox(
+                                                  width: CustomSize.sm),
+                                              Text(events.driver)
+                                            ],
+                                          ),
+                                          const SizedBox(height: CustomSize.sm),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Plat Nomor',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge,
+                                              ),
+                                              const SizedBox(
+                                                  width: CustomSize.sm),
+                                              Text(events.platNomer)
+                                            ],
+                                          ),
+                                          const SizedBox(height: CustomSize.md),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Text(
+                                              events.status == '0'
+                                                  ? 'Belum Disetujui Manajer'
+                                                  : events.status == '1'
+                                                      ? 'Belum Diangkut'
+                                                      : 'Telah Diangkut',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: (events.status ==
+                                                                  '0' ||
+                                                              events.status ==
+                                                                  '1')
+                                                          ? AppColors.error
+                                                          : Colors.green),
+                                            ),
+                                          )
+                                        ],
+                                      ));
+                                },
+                              )
+                            : null;
+                      },
+                      child: Container(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 12.0,
                           vertical: 4.0,
@@ -307,33 +320,24 @@ class HomepageDriver extends StatelessWidget {
                             ),
                             const SizedBox(height: CustomSize.sm),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Driver',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
-                                    ),
-                                    const SizedBox(width: CustomSize.sm),
-                                    Text(events.driver)
-                                  ],
+                                Text(
+                                  'Driver',
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 const SizedBox(width: CustomSize.sm),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Plat Nomor',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
-                                    const SizedBox(width: CustomSize.sm),
-                                    Text(events.platNomer)
-                                  ],
+                                Text(events.driver)
+                              ],
+                            ),
+                            const SizedBox(height: CustomSize.sm),
+                            Row(
+                              children: [
+                                Text(
+                                  'Plat Nomor',
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
+                                const SizedBox(width: CustomSize.sm),
+                                Text(events.platNomer)
                               ],
                             ),
                             const SizedBox(height: CustomSize.md),
@@ -357,10 +361,11 @@ class HomepageDriver extends StatelessWidget {
                               ),
                             )
                           ],
-                        )),
-                  );
-                },
-              )),
+                        ),
+                      ),
+                    );
+                  },
+                )),
         ],
       ),
     );
