@@ -83,6 +83,8 @@ class LoginController extends GetxController {
         Get.offNamed('/rootpage-manajer');
       } else if (user.roles == '1') {
         Get.offNamed('/rootpage-driver');
+      } else if (user.roles == '2') {
+        Get.offNamed('/rootpage-admin');
       } else {
         SnackbarLoader.errorSnackBar(
             title: 'Kesalahan',

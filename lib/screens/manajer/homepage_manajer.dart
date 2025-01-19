@@ -110,8 +110,8 @@ class _HomepageManajerState extends State<HomepageManajer> {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
-                        spreadRadius: 2,
-                        blurRadius: 5,
+                        spreadRadius: 1,
+                        blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
                     ],
@@ -201,246 +201,293 @@ class _HomepageManajerState extends State<HomepageManajer> {
                             (value == _Tab.driver && jadwal.status == '1')) {
                           return GestureDetector(
                             onTap: () {
-                              jadwal.status == '0'
-                                  ? showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () => Get.back(),
-                                                child: const Text('Batalkan')),
-                                            TextButton(
-                                                onPressed: () async {
-                                                  await tableController
-                                                      .editStatusByManajer(
-                                                          jadwal.id,
-                                                          jadwal.status);
-                                                  setState(() {});
-                                                },
-                                                child: const Text('Setujui'))
-                                          ],
-                                          title: Text(
-                                            'Konfirmasi Penyetujuan Limbah',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium,
-                                          ),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                jadwal.namaUsaha,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headlineMedium,
-                                              ),
-                                              const SizedBox(
-                                                  height: CustomSize.md),
-                                              Text(jadwal.alamat,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  RichText(
-                                                    text: TextSpan(
-                                                        text: 'Jumlah Limbah',
+                              if (jadwal.status == '0') {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
+                                      elevation: 5.0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Konfirmasi Penyetujuan Limbah',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleLarge
+                                                  ?.apply(
+                                                    fontWeightDelta: 2,
+                                                    color: Colors.black,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 16.0),
+                                            Text(
+                                              jadwal.namaUsaha,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.apply(fontWeightDelta: 2),
+                                            ),
+                                            const SizedBox(height: 8.0),
+                                            Text(
+                                              jadwal.alamat,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
+                                            ),
+                                            const SizedBox(height: 12.0),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                RichText(
+                                                  text: TextSpan(
+                                                    text: 'Jumlah Limbah',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.apply(
+                                                            fontWeightDelta: 1,
+                                                            color:
+                                                                Colors.black87),
+                                                    children: [
+                                                      const TextSpan(
+                                                          text: ' | '),
+                                                      TextSpan(
+                                                        text:
+                                                            jadwal.jumlahLimbah,
                                                         style: Theme.of(context)
                                                             .textTheme
-                                                            .titleMedium,
-                                                        children: [
-                                                          const TextSpan(
-                                                              text: ' | '),
-                                                          TextSpan(
-                                                              text: jadwal
-                                                                  .jumlahLimbah,
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyMedium)
-                                                        ]),
+                                                            .bodyMedium,
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Text(jadwal.jenisLimbah,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.apply(
-                                                              color: AppColors
-                                                                  .error))
-                                                ],
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  RichText(
-                                                    text: TextSpan(
-                                                        text: 'Tgl',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .titleMedium,
-                                                        children: [
-                                                          const TextSpan(
-                                                              text: ' | '),
-                                                          TextSpan(
-                                                              text: DateFormat(
-                                                                      'dd MMM yyyy')
-                                                                  .format(jadwal
-                                                                      .date!),
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyMedium)
-                                                        ]),
-                                                  ),
-                                                  Text(jadwal.telp,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.apply(
-                                                              color: AppColors
-                                                                  .darkGrey))
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                  height: CustomSize.sm),
-                                              Align(
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: Text(
-                                                  jadwal.status == '0'
-                                                      ? 'Meminta Persetujuan'
-                                                      : 'Sudah Disetujui',
+                                                ),
+                                                Text(
+                                                  jadwal.jenisLimbah,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyMedium
-                                                      ?.copyWith(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: jadwal
-                                                                      .status ==
-                                                                  '0'
-                                                              ? AppColors.error
-                                                              : Colors.green),
+                                                      ?.apply(
+                                                          color:
+                                                              AppColors.error),
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    )
-                                  : null;
+                                              ],
+                                            ),
+                                            const SizedBox(height: 12.0),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                RichText(
+                                                  text: TextSpan(
+                                                    text: 'Tgl',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium,
+                                                    children: [
+                                                      const TextSpan(
+                                                          text: ' | '),
+                                                      TextSpan(
+                                                        text: DateFormat(
+                                                                'dd MMM yyyy')
+                                                            .format(
+                                                                jadwal.date!),
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Text(
+                                                  jadwal.telp,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.apply(
+                                                          color: AppColors
+                                                              .darkGrey),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 12.0),
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: Text(
+                                                jadwal.status == '0'
+                                                    ? 'Meminta Persetujuan'
+                                                    : 'Sudah Disetujui',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          jadwal.status == '0'
+                                                              ? AppColors.error
+                                                              : Colors.green,
+                                                    ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 16.0),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () => Get.back(),
+                                                  child: Text(
+                                                    'Batalkan',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.copyWith(
+                                                          color:
+                                                              Colors.redAccent,
+                                                        ),
+                                                  ),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () async {
+                                                    await tableController
+                                                        .editStatusByManajer(
+                                                            jadwal.id,
+                                                            jadwal.status);
+                                                    setState(() {});
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 12.0,
+                                                        horizontal: 24.0),
+                                                  ),
+                                                  child: const Text('Setujui'),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
                             },
-                            child: Container(
+                            child: Card(
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 20.0),
-                              padding: const EdgeInsets.all(CustomSize.sm),
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 1, color: Colors.black),
+                              elevation: 4.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
                               ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    jadwal.namaUsaha,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
-                                  const SizedBox(height: CustomSize.md),
-                                  Text(jadwal.alamat,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      jadwal.namaUsaha,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodyMedium),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
+                                          .titleMedium,
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      jadwal.alamat,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
                                             text: 'Jumlah Limbah',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .titleMedium,
+                                                .titleSmall,
                                             children: [
                                               const TextSpan(text: ' | '),
                                               TextSpan(
-                                                  text: jadwal.jumlahLimbah,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium)
-                                            ]),
-                                      ),
-                                      Text(jadwal.jenisLimbah,
+                                                text: jadwal.jumlahLimbah,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Text(
+                                          jadwal.jenisLimbah,
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyMedium
-                                              ?.apply(color: AppColors.error))
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      // RichText(
-                                      //   text: TextSpan(
-                                      //       text: 'Tgl',
-                                      //       style: Theme.of(context)
-                                      //           .textTheme
-                                      //           .titleMedium,
-                                      //       children: [
-                                      //         const TextSpan(text: ' | '),
-                                      //         TextSpan(
-                                      //             text:
-                                      //                 DateFormat('dd MMM yyyy')
-                                      //                     .format(jadwal.date!),
-                                      //             style: Theme.of(context)
-                                      //                 .textTheme
-                                      //                 .bodyMedium)
-                                      //       ]),
-                                      // ),
-                                      Text(jadwal.telp,
+                                              ?.apply(color: AppColors.error),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          DateFormat('dd MMM yyyy')
+                                              .format(jadwal.date!),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        ),
+                                        Text(
+                                          jadwal.telp,
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyMedium
                                               ?.apply(
-                                                  color: AppColors.darkGrey))
-                                    ],
-                                  ),
-                                  const SizedBox(height: CustomSize.sm),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      jadwal.status == '0'
-                                          ? 'Meminta Persetujuan'
-                                          : 'Sudah Disetujui',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
+                                                  color: AppColors.darkGrey),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        jadwal.status == '0'
+                                            ? 'Meminta Persetujuan'
+                                            : 'Sudah Disetujui',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
                                               fontWeight: FontWeight.bold,
                                               color: jadwal.status == '0'
                                                   ? AppColors.error
-                                                  : Colors.green),
+                                                  : Colors.green,
+                                            ),
+                                      ),
                                     ),
-                                  )
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
-                          // return ListTile(
-                          //     title: Text(jadwal.namaUsaha),
-                          //     subtitle: Text(jadwal.alamat),
-                          //     trailing: Text(jadwal.status == '0'
-                          //         ? 'Belum Disetujui'
-                          //         : 'Sudah Disetujui'));
                         } else {
                           return const SizedBox.shrink();
                         }

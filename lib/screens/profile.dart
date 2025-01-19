@@ -28,174 +28,201 @@ class ProfileScreen extends StatelessWidget {
 
     return SafeArea(
       child: RefreshIndicator(
-        onRefresh: () async {
-          storageUtil.getRoles() == '0'
-              ? await tableController.getEventsByStatus('2')
-              : null;
-        },
-        child: ListView(
-          children: [
-            ClipPath(
-              clipper: TCustomCurvedEdges(),
-              child: Container(
-                color: Colors.blueAccent,
-                width: double.infinity,
-                padding: const EdgeInsets.only(bottom: CustomSize.lg),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: CustomSize.lg, vertical: CustomSize.md),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                          onPressed: storageUtil.logout,
-                          icon: const Icon(Iconsax.logout),
-                        ),
+          onRefresh: () async {
+            storageUtil.getRoles() == '0'
+                ? await tableController.getEventsByStatus('2')
+                : null;
+          },
+          child: ListView(
+            children: [
+              ClipPath(
+                clipper: TCustomCurvedEdges(),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(bottom: CustomSize.lg),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
                       ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(70),
-                        child: CachedNetworkImage(
-                          width: CustomSize.profileImageSize,
-                          height: CustomSize.profileImageSize,
-                          imageUrl: storageUtil.getImage(),
-                          fit: BoxFit.cover,
-                          progressIndicatorBuilder: (_, __, ___) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (_, __, ___) => const Icon(Icons.error),
-                        ),
-                      ),
-                      const SizedBox(height: CustomSize.spaceBtwItems),
-                      Text(storageUtil.getName(),
-                          style: Theme.of(context).textTheme.headlineMedium)
                     ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: CustomSize.lg, vertical: CustomSize.md),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            onPressed: storageUtil.logout,
+                            icon: const Icon(Iconsax.logout),
+                            iconSize:
+                                28, // Adjust size for better visual balance
+                            color: AppColors.primary, // Use a consistent color
+                          ),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(70),
+                          child: CachedNetworkImage(
+                            width: CustomSize.profileImageSize,
+                            height: CustomSize.profileImageSize,
+                            imageUrl: storageUtil.getImage(),
+                            fit: BoxFit.cover,
+                            progressIndicatorBuilder: (_, __, ___) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (_, __, ___) =>
+                                const Icon(Icons.error),
+                          ),
+                        ),
+                        const SizedBox(height: CustomSize.spaceBtwItems),
+                        Text(
+                          storageUtil.getName(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                color: Colors.black87,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: CustomSize.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(Iconsax.direct),
-                      SizedBox(width: CustomSize.sm),
-                      Text('E-mail'),
-                    ],
-                  ),
-                  const SizedBox(height: CustomSize.sm),
-                  Text(storageUtil.getEmail()),
-                  const SizedBox(height: CustomSize.spaceBtwSections),
-                  const Row(
-                    children: [
-                      Icon(Iconsax.direct),
-                      SizedBox(width: CustomSize.sm),
-                      Text('Nomer Telepon'),
-                    ],
-                  ),
-                  const SizedBox(height: CustomSize.sm),
-                  Text(storageUtil.getTelp()),
-                  const SizedBox(height: CustomSize.spaceBtwSections),
-                  const Row(
-                    children: [
-                      Icon(Iconsax.direct),
-                      SizedBox(width: CustomSize.sm),
-                      Text('Roles'),
-                    ],
-                  ),
-                  const SizedBox(height: CustomSize.sm),
-                  Text(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: CustomSize.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Iconsax.direct),
+                        SizedBox(width: CustomSize.sm),
+                        Text('E-mail'),
+                      ],
+                    ),
+                    const SizedBox(height: CustomSize.sm),
+                    Text(storageUtil.getEmail()),
+                    const SizedBox(height: CustomSize.spaceBtwSections),
+                    const Row(
+                      children: [
+                        Icon(Iconsax.direct),
+                        SizedBox(width: CustomSize.sm),
+                        Text('Nomer Telepon'),
+                      ],
+                    ),
+                    const SizedBox(height: CustomSize.sm),
+                    Text(storageUtil.getTelp()),
+                    const SizedBox(height: CustomSize.spaceBtwSections),
+                    const Row(
+                      children: [
+                        Icon(Iconsax.direct),
+                        SizedBox(width: CustomSize.sm),
+                        Text('Roles'),
+                      ],
+                    ),
+                    const SizedBox(height: CustomSize.sm),
+                    Text(
+                      storageUtil.getRoles() == '0'
+                          ? 'Manajer'
+                          : storageUtil.getRoles() == '1'
+                              ? 'Driver'
+                              : 'Anda belum memasukkan roles di Firebase',
+                    ),
                     storageUtil.getRoles() == '0'
-                        ? 'Manajer'
-                        : storageUtil.getRoles() == '1'
-                            ? 'Driver'
-                            : 'Anda belum memasukkan roles di Firebase',
-                  ),
-                  storageUtil.getRoles() == '0'
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text('Laporan Barang',
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Laporan Barang',
                                 style:
-                                    Theme.of(context).textTheme.headlineMedium),
-                            const SizedBox(height: CustomSize.spaceBtwItems),
-                            FutureBuilder<List<Event>>(
-                              future: tableController.getEventsByStatus('2'),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                } else if (snapshot.hasError) {
-                                  return Center(
-                                      child: Text('Error: ${snapshot.error}'));
-                                } else if (!snapshot.hasData ||
-                                    snapshot.data!.isEmpty) {
-                                  return const Center(
-                                      child: Text('No data available'));
-                                } else {
-                                  List<Event>? jadwalList = snapshot.data;
-                                  return ListView.separated(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: jadwalList!.length,
-                                    itemBuilder: (context, index) {
-                                      var jadwal = jadwalList[index];
-                                      return Container(
-                                        padding:
-                                            const EdgeInsets.all(CustomSize.sm),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1, color: Colors.black),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              jadwal.namaUsaha,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineMedium,
-                                            ),
-                                            GestureDetector(
-                                              onTap: () =>
-                                                  _generatePdf(jadwal, context),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Buka laporan',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .labelMedium
-                                                        ?.apply(
-                                                            color: AppColors
-                                                                .primary),
-                                                  ),
-                                                  const SizedBox(width: 5.0),
-                                                  const Icon(
-                                                    Iconsax.document_download,
-                                                    size: 15,
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                                height: CustomSize.md),
-                                            Text(jadwal.alamat,
+                                    Theme.of(context).textTheme.headlineMedium,
+                              ),
+                              const SizedBox(height: CustomSize.spaceBtwItems),
+                              FutureBuilder<List<Event>>(
+                                future: tableController.getEventsByStatus('2'),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  } else if (snapshot.hasError) {
+                                    return Center(
+                                        child:
+                                            Text('Error: ${snapshot.error}'));
+                                  } else if (!snapshot.hasData ||
+                                      snapshot.data!.isEmpty) {
+                                    return const Center(
+                                        child: Text('No data available'));
+                                  } else {
+                                    List<Event>? jadwalList = snapshot.data;
+                                    return ListView.separated(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: jadwalList!.length,
+                                      itemBuilder: (context, index) {
+                                        var jadwal = jadwalList[index];
+                                        return Container(
+                                          padding: const EdgeInsets.all(
+                                              CustomSize.sm),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 1, color: Colors.black),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                jadwal.namaUsaha,
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .bodyMedium),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                RichText(
-                                                  text: TextSpan(
+                                                    .headlineMedium,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () => _generatePdf(
+                                                    jadwal, context),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Buka laporan',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .labelMedium
+                                                          ?.apply(
+                                                              color: AppColors
+                                                                  .primary),
+                                                    ),
+                                                    const SizedBox(width: 5.0),
+                                                    const Icon(
+                                                        Iconsax
+                                                            .document_download,
+                                                        size: 15),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                  height: CustomSize.md),
+                                              Text(
+                                                jadwal.alamat,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  RichText(
+                                                    text: TextSpan(
                                                       text: 'Jumlah Limbah',
                                                       style: Theme.of(context)
                                                           .textTheme
@@ -204,30 +231,34 @@ class ProfileScreen extends StatelessWidget {
                                                         const TextSpan(
                                                             text: ' | '),
                                                         TextSpan(
-                                                            text: jadwal
-                                                                .jumlahLimbah,
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyMedium)
-                                                      ]),
-                                                ),
-                                                Text(jadwal.jenisLimbah,
+                                                          text: jadwal
+                                                              .jumlahLimbah,
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyMedium,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    jadwal.jenisLimbah,
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyMedium
                                                         ?.apply(
                                                             color: AppColors
-                                                                .error))
-                                              ],
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                RichText(
-                                                  text: TextSpan(
+                                                                .error),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  RichText(
+                                                    text: TextSpan(
                                                       text: 'Tgl',
                                                       style: Theme.of(context)
                                                           .textTheme
@@ -242,57 +273,61 @@ class ProfileScreen extends StatelessWidget {
                                                               Theme.of(context)
                                                                   .textTheme
                                                                   .bodyMedium,
-                                                        )
-                                                      ]),
-                                                ),
-                                                Text(jadwal.telp,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    jadwal.telp,
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyMedium
                                                         ?.apply(
                                                             color: AppColors
-                                                                .darkGrey))
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                                height: CustomSize.sm),
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Text(
-                                                jadwal.status == '0'
-                                                    ? 'Meminta Persetujuan'
-                                                    : 'Sudah Disetujui',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
+                                                                .darkGrey),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                  height: CustomSize.sm),
+                                              Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Text(
+                                                  jadwal.status == '0'
+                                                      ? 'Meminta Persetujuan'
+                                                      : 'Sudah Disetujui',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color: jadwal.status ==
                                                                 '0'
                                                             ? AppColors.error
-                                                            : Colors.green),
+                                                            : Colors.green,
+                                                      ),
+                                                ),
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                    separatorBuilder: (_, __) =>
-                                        const SizedBox(height: 12.0),
-                                  );
-                                }
-                              },
-                            )
-                          ],
-                        )
-                      : const SizedBox.shrink()
-                ],
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder: (_, __) =>
+                                          const SizedBox(height: 12.0),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                ),
               ),
-            )
-          ],
-        ),
-      ),
+            ],
+          )),
     );
   }
 

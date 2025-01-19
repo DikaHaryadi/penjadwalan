@@ -15,9 +15,28 @@ class LoginScreen extends StatelessWidget {
           child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: CustomSize.md),
         children: [
-          const Text("PT. Andestan Jadi Jaya",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+          Column(
+            children: [
+              const Text(
+                "PT. Andestan Jadi Jaya",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Sistem Informasi Penjadwalan",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
           Form(
               key: controller.loginFromKey,
               child: Padding(

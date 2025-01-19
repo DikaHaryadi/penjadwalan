@@ -7,7 +7,11 @@ import 'package:get/get.dart';
 class ExpandableTextWidget extends StatelessWidget {
   final String text;
 
-  const ExpandableTextWidget({super.key, required this.text});
+  const ExpandableTextWidget(
+      {super.key,
+      required this.text,
+      required int maxLines,
+      TextStyle? textStyle});
 
   @override
   Widget build(BuildContext context) {
