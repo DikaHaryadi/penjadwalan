@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Event {
-  final String id;
+  final String? id;
   String alamat;
   String driver;
   String harga;
@@ -15,7 +15,7 @@ class Event {
   String waktu;
 
   Event({
-    required this.id,
+    this.id,
     required this.alamat,
     required this.driver,
     required this.harga,
@@ -62,6 +62,42 @@ class Event {
       'Telp': telp,
       'Waktu': waktu
     };
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Alamat': alamat,
+      'Driver': driver,
+      'Harga': harga,
+      'Jenis_Limbah': jenisLimbah,
+      'Jumlah_Limbah': jumlahLimbah,
+      'Nama_Usaha': namaUsaha,
+      'Plat_Nomer': platNomer,
+      'Status': status,
+      'Tanggal': date != null ? Timestamp.fromDate(date!) : null,
+      'Telp': telp,
+      'Waktu': waktu
+    };
+  }
+
+  factory Event.fromSnapshot(QueryDocumentSnapshot document) {
+    final data = document.data() as Map<String, dynamic>;
+    final timestamp =
+        data['Tanggal'] as Timestamp?; // Pastikan ini menangani Timestamp
+    return Event(
+      id: document.id,
+      alamat: data['Alamat'] ?? '',
+      driver: data['Driver'] ?? '',
+      harga: data['Harga'] ?? '',
+      jenisLimbah: data['Jenis_Limbah'] ?? '',
+      jumlahLimbah: data['Jumlah_Limbah'] ?? '',
+      namaUsaha: data['Nama_Usaha'] ?? '',
+      platNomer: data['Plat_Nomer'] ?? '',
+      status: data['Status'] ?? '',
+      date: timestamp?.toDate(), // Konversi Timestamp ke DateTime
+      telp: data['Telp'] ?? '',
+      waktu: data['Waktu'] ?? '',
+    );
   }
 }
 

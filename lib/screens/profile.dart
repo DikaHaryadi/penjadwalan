@@ -133,7 +133,9 @@ class ProfileScreen extends StatelessWidget {
                           ? 'Manajer'
                           : storageUtil.getRoles() == '1'
                               ? 'Driver'
-                              : 'Anda belum memasukkan roles di Firebase',
+                              : storageUtil.getRoles() == '2'
+                                  ? 'admin'
+                                  : 'unknow',
                     ),
                     storageUtil.getRoles() == '0'
                         ? Column(
@@ -267,8 +269,10 @@ class ProfileScreen extends StatelessWidget {
                                                         const TextSpan(
                                                             text: ' | '),
                                                         TextSpan(
-                                                          text: jadwal.date
-                                                              .toString(),
+                                                          text: DateFormat(
+                                                                  'yyyy-MM-dd')
+                                                              .format(
+                                                                  jadwal.date!),
                                                           style:
                                                               Theme.of(context)
                                                                   .textTheme
@@ -401,7 +405,8 @@ class ProfileScreen extends StatelessWidget {
                   textAlign: pw.TextAlign.center,
                   style: pw.TextStyle(font: ttfRegular)),
               pw.SizedBox(height: 20),
-              _buildAlignedText('Nomor Manifes', event.id, ttfBold, ttfRegular),
+              _buildAlignedText(
+                  'Nomor Manifes', event.id!, ttfBold, ttfRegular),
               _buildAlignedText(
                   'Jenis Limbah', event.jenisLimbah, ttfBold, ttfRegular),
               _buildAlignedText(

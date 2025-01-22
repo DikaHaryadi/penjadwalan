@@ -26,7 +26,7 @@ class _HomepageManajerState extends State<HomepageManajer> {
     final selectedTabLogin = ValueNotifier(_Tab.suplier);
     final tableController = Get.put(TableEventsController());
     return SafeArea(
-      child: Column(
+      child: ListView(
         children: [
           Row(
             children: [
@@ -364,7 +364,7 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                                   onPressed: () async {
                                                     await tableController
                                                         .editStatusByManajer(
-                                                            jadwal.id,
+                                                            jadwal.id!,
                                                             jadwal.status);
                                                     setState(() {});
                                                   },

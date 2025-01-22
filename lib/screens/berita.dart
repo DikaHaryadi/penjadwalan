@@ -1,11 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/constant/custom_size.dart';
+import 'package:example/constant/storage_util.dart';
 import 'package:example/controllers/berita_controller.dart';
 import 'package:example/models/berita_model.dart';
 import 'package:example/theme/app_colors.dart';
 import 'package:example/utils/expandable_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
+
+import 'admin/create_berita.dart';
+import 'admin/edit_berita.dart';
 
 class BeritaScreen extends StatelessWidget {
   const BeritaScreen({super.key});
@@ -13,6 +18,7 @@ class BeritaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(BeritaController());
+    final storageUtil = StorageUtil();
 
     return Scaffold(
       appBar: AppBar(
@@ -23,6 +29,14 @@ class BeritaScreen extends StatelessWidget {
                 color: AppColors.primary,
               ),
         ),
+        actions: [
+          if (storageUtil.getRoles() == '2')
+            IconButton(
+                onPressed: () {
+                  Get.to(() => CreateBerita());
+                },
+                icon: Icon(Iconsax.add))
+        ],
       ),
       body: Obx(
         () => ListView.separated(
@@ -51,6 +65,42 @@ class BeritaScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (storageUtil.getRoles() == '2')
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  controller.setEditState(berita);
+                                  Get.to(() => EditBeritaPage(
+                                        id: berita.id!,
+                                        image: berita.image,
+                                      ));
+                                },
+                                child: Text('Edit')),
+                            TextButton(
+                              onPressed: () {
+                                Get.defaultDialog(
+                                  title: "Konfirmasi",
+                                  middleText:
+                                      "Apakah Anda yakin ingin menghapus berita ini?",
+                                  textCancel: "Batal",
+                                  textConfirm: "Hapus",
+                                  confirmTextColor: Colors.white,
+                                  onConfirm: () {
+                                    controller.deleteBerita(
+                                        berita.id!, berita.image);
+                                    Get.back(); // Tutup dialog setelah konfirmasi
+                                  },
+                                );
+                              },
+                              child: Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: CachedNetworkImage(
@@ -168,13 +218,14 @@ class BeritaDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: CustomSize.spaceBtwItems),
-          ExpandableTextWidget(
-            text: model.deksripsi,
-            maxLines: 15,
-            textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.black87,
-                ),
-          ),
+          Text(model.deksripsi)
+          // ExpandableTextWidget(
+          //   text: model.deksripsi,
+          //   maxLines: 15,
+          //   textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          //         color: Colors.black87,
+          //       ),
+          // ),
         ],
       ),
     );

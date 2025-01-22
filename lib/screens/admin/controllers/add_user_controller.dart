@@ -20,6 +20,13 @@ class AddUserController extends GetxController {
   Rx<File?> image = Rx<File?>(null);
   RxBool obscureText = true.obs;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  RxList<UserModel> userList = <UserModel>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchUsers();
+  }
 
   String get tipeValue {
     switch (tipe.value) {
@@ -111,6 +118,8 @@ class AddUserController extends GetxController {
 
       await saveUserNew(newUser);
 
+      await fetchUsers();
+
       Navigator.of(Get.overlayContext!).pop();
 
       SnackbarLoader.successSnackBar(
@@ -125,6 +134,26 @@ class AddUserController extends GetxController {
       print('Ini error: ${e.toString()}');
     } finally {
       Navigator.of(Get.overlayContext!).pop();
+    }
+  }
+
+  Future<void> fetchUsers() async {
+    try {
+      // Mendapatkan semua dokumen dari koleksi 'Users'
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await _db.collection('Users').get();
+
+      // Mengonversi setiap dokumen ke dalam UserModel
+      final users =
+          snapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList();
+
+      // Menyimpan data ke dalam RxList
+      userList.value = users;
+    } catch (e) {
+      SnackbarLoader.errorSnackBar(
+        title: 'Error',
+        message: 'Gagal mengambil data: $e',
+      );
     }
   }
 }

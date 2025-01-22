@@ -1,3 +1,4 @@
+import 'package:example/screens/admin/homepage_admin.dart';
 import 'package:example/screens/berita.dart';
 import 'package:example/screens/manajer/homepage_manajer.dart';
 import 'package:example/screens/profile.dart';
@@ -55,6 +56,12 @@ class StorageUtil {
 
   List<Widget> widgetOptionsDriver = const [
     HomepageDriver(),
+    BeritaScreen(),
+    ProfileScreen(),
+  ];
+
+  List<Widget> widgetOptionsAdmin = const [
+    HomepageAdmin(),
     BeritaScreen(),
     ProfileScreen(),
   ];
