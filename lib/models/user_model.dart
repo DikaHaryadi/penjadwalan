@@ -4,6 +4,7 @@ class UserModel {
   String name;
   String telp;
   String email;
+  String? password;
   String image;
   String roles;
 
@@ -11,6 +12,7 @@ class UserModel {
     required this.name,
     required this.telp,
     required this.email,
+    this.password,
     required this.image,
     required this.roles,
   });
@@ -21,6 +23,7 @@ class UserModel {
         name: '',
         telp: '',
         email: '',
+        password: '',
         image: '',
         roles: '',
       );
@@ -30,6 +33,7 @@ class UserModel {
       'Name': name,
       'Telp': telp,
       'Email': email,
+      'Password': password,
       'Image': image,
       'Roles': roles,
     };
@@ -44,6 +48,7 @@ class UserModel {
         name: data?['Name'] ?? '',
         telp: data?['Telp'] ?? '',
         email: data?['Email'] ?? '',
+        password: data?['Password'] ?? '',
         image: data?['Image'] ?? '',
         roles: data?['Roles'] ?? '',
       );

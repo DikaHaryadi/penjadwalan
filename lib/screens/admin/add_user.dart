@@ -245,6 +245,7 @@ class CreateUser extends StatelessWidget {
                     'driver',
                     'manajer',
                     'admin',
+                    'supplier',
                   ],
                   onChanged: (String? value) {
                     controller.tipe.value = value!;

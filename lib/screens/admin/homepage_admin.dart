@@ -1,14 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/screens/admin/create_jadwal.dart';
 import 'package:example/screens/admin/edit_jadwal.dart';
+import 'package:example/screens/admin/jadwal_masuk_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 import '../../constant/custom_size.dart';
 import '../../constant/storage_util.dart';
 import '../../theme/app_colors.dart';
+import '../supplier/home_supplier.dart';
 import 'controllers/buatjadwal_controller.dart';
 
 class HomepageAdmin extends StatelessWidget {
@@ -56,9 +57,14 @@ class HomepageAdmin extends StatelessWidget {
                     ],
                   ),
                   Expanded(child: Container()),
-                  IconButton(
-                      onPressed: () => Get.toNamed('/add-user'),
-                      icon: Icon(Iconsax.user_add))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Button(
+                      create: () => Get.to(JadwalMasukView()),
+                      logout: storageUtil.logout,
+                      createText: 'Jadwal Masuk',
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -4,13 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/constant/custom_size.dart';
 import 'package:example/constant/storage_util.dart';
 import 'package:example/utils/curved_edges.dart';
+import 'package:example/utils/pdf_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:open_file/open_file.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -187,8 +187,16 @@ class ProfileScreen extends StatelessWidget {
                                                     .headlineMedium,
                                               ),
                                               GestureDetector(
-                                                onTap: () => _generatePdf(
-                                                    jadwal, context),
+                                                onTap: () async {
+                                                  final pdf =
+                                                      await _generatePdf(
+                                                          jadwal, context);
+
+                                                  Get.to(() => PdfPreviewScreen(
+                                                      pdf: pdf,
+                                                      fileName:
+                                                          'Laporan-Limbah-${DateFormat('dd MMM yyyy').format(jadwal.date!)}.pdf'));
+                                                },
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
@@ -358,11 +366,11 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _hideLoadingDialog(BuildContext context) {
-    Navigator.of(context).pop();
-  }
+  // void _hideLoadingDialog(BuildContext context) {
+  //   Navigator.of(context).pop();
+  // }
 
-  Future<void> _generatePdf(Event event, BuildContext context) async {
+  Future<Uint8List> _generatePdf(Event event, BuildContext context) async {
     _showLoadingDialog(context); // Menampilkan loading dialog
 
     final pdf = pw.Document();
@@ -459,38 +467,41 @@ class ProfileScreen extends StatelessWidget {
       },
     ));
 
-    try {
-      if (await Permission.storage.request().isGranted) {
-        final downloadsDirectory = await getExternalStorageDirectories(
-            type: StorageDirectory.downloads);
-        if (downloadsDirectory == null || downloadsDirectory.isEmpty) {
-          throw Exception('Could not find downloads directory');
-        }
-        final downloadPath = downloadsDirectory.first.path;
-        final filePath = '$downloadPath/laporan_limbah.pdf';
+    Navigator.of(Get.overlayContext!).pop();
 
-        final file = File(filePath);
-        await file.writeAsBytes(await pdf.save());
-        _hideLoadingDialog(Get.context!); // Menyembunyikan loading dialog
+    return pdf.save();
+    // try {
+    //   if (await Permission.storage.request().isGranted) {
+    //     final downloadsDirectory = await getExternalStorageDirectories(
+    //         type: StorageDirectory.downloads);
+    //     if (downloadsDirectory == null || downloadsDirectory.isEmpty) {
+    //       throw Exception('Could not find downloads directory');
+    //     }
+    //     final downloadPath = downloadsDirectory.first.path;
+    //     final filePath = '$downloadPath/laporan_limbah.pdf';
 
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-          SnackBar(content: Text('PDF has been saved to $filePath')),
-        );
-        print('PDF has been saved to $filePath');
-        await PdfHelper.openFile(file);
-      } else {
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-          const SnackBar(
-              content: Text('Storage permission is required to save PDF')),
-        );
-        _hideLoadingDialog(Get.context!); // Menyembunyikan loading dialog
-      }
-    } catch (e) {
-      _hideLoadingDialog(Get.context!); // Menyembunyikan loading dialog
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
-        SnackBar(content: Text('Error saving PDF: $e')),
-      );
-    }
+    //     final file = File(filePath);
+    //     await file.writeAsBytes(await pdf.save());
+    //     _hideLoadingDialog(Get.context!); // Menyembunyikan loading dialog
+
+    //     ScaffoldMessenger.of(Get.context!).showSnackBar(
+    //       SnackBar(content: Text('PDF has been saved to $filePath')),
+    //     );
+    //     print('PDF has been saved to $filePath');
+    //     await PdfHelper.openFile(file);
+    //   } else {
+    //     ScaffoldMessenger.of(Get.context!).showSnackBar(
+    //       const SnackBar(
+    //           content: Text('Storage permission is required to save PDF')),
+    //     );
+    //     _hideLoadingDialog(Get.context!); // Menyembunyikan loading dialog
+    //   }
+    // } catch (e) {
+    //   _hideLoadingDialog(Get.context!); // Menyembunyikan loading dialog
+    //   ScaffoldMessenger.of(Get.context!).showSnackBar(
+    //     SnackBar(content: Text('Error saving PDF: $e')),
+    //   );
+    // }
   }
 
   String _formatDate(DateTime? date) {

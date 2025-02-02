@@ -36,6 +36,8 @@ class AddUserController extends GetxController {
         return '1';
       case 'admin':
         return '2';
+      case 'supplier':
+        return '3';
       default:
         return '-1';
     }
@@ -112,6 +114,7 @@ class AddUserController extends GetxController {
         name: nameC.text.trim(),
         telp: telpC.text.trim(),
         email: emailC.text.trim(),
+        password: passwordC.text.trim(),
         image: imgUrl,
         roles: tipeValue,
       );

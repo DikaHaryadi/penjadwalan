@@ -5,6 +5,7 @@ class AppColors {
   static const Color primary = Color(0xFF4b68ff);
   static const Color secondary = Color(0xFFFFE24B);
   static const Color accent = Color(0xFFb0c7ff);
+  static const Color secondarySoft = Color(0xFF9D9D9D);
 
   // Icon colors
   static const Color iconPrimary = Color(0xFF8D8D8D);

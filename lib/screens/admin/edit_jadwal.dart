@@ -117,13 +117,13 @@ class _EditJadwalState extends State<EditJadwal> {
               },
             ),
             const SizedBox(height: 8.0),
-            Text('Nama'),
+            Text('Nama Driver'),
             TextFormField(
               controller: driver,
               keyboardType: TextInputType.name,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Nama is required';
+                  return 'Nama driver is required';
                 }
                 return null;
               },

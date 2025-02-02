@@ -1,3 +1,4 @@
+import 'package:example/screens/supplier/create_pengangkutan.dart';
 import 'package:example/splash_screen.dart';
 import 'package:get/get.dart';
 
@@ -5,6 +6,7 @@ import '../screens/admin/add_user.dart';
 import '../screens/admin/rootpage_admin.dart';
 import '../screens/driver/rootpage_driver.dart';
 import '../screens/manajer/rootpage_manajer.dart';
+import '../screens/supplier/home_supplier.dart';
 
 class AppRoutes {
   static List<GetPage> routes() => [
@@ -25,8 +27,16 @@ class AppRoutes {
           page: () => const RootpageAdmin(),
         ),
         GetPage(
+          name: '/rootpage-supplier',
+          page: () => const HomeSupplier(),
+        ),
+        GetPage(
           name: '/add-user',
           page: () => const AddUser(),
+        ),
+        GetPage(
+          name: '/add-jadwal-masuk',
+          page: () => const CreatePengangkutan(),
         )
       ];
 }
