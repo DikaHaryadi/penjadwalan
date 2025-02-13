@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/screens/supplier/controller/supplier_controller.dart';
-import 'package:example/screens/supplier/edit_pengangkutan.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -47,6 +46,7 @@ class HomeSupplier extends StatelessWidget {
                   ),
                   const SizedBox(width: CustomSize.spaceBtwItems),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('👋 Hallo...',
                           style: Theme.of(context).textTheme.headlineMedium),
@@ -93,8 +93,16 @@ class HomeSupplier extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
+                              Expanded(child: Container()),
+                              Text(
+                                jadwal.namaPerusahaan,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              Expanded(child: Container()),
                               GestureDetector(
                                   onTap: () {
                                     showDialog(
@@ -132,25 +140,18 @@ class HomeSupplier extends StatelessWidget {
                                     Iconsax.trash,
                                     color: Colors.red,
                                   )),
-                              Text(
-                                jadwal.namaPerusahaan,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              GestureDetector(
-                                  onTap: () {
-                                    Get.to(
-                                        () => EditPengangkutan(model: jadwal));
-                                  },
-                                  child: Icon(
-                                    Iconsax.edit,
-                                    color: Colors.grey,
-                                  )),
+                              // GestureDetector(
+                              //     onTap: () {
+                              //       Get.to(
+                              //           () => EditPengangkutan(model: jadwal));
+                              //     },
+                              //     child: Icon(
+                              //       Iconsax.edit,
+                              //       color: Colors.grey,
+                              //     )),
                             ],
                           ),
-                          Divider(),
+                          const Divider(),
                           Text('Alamat :',
                               style: Theme.of(context).textTheme.labelMedium),
                           Text(
@@ -158,56 +159,44 @@ class HomeSupplier extends StatelessWidget {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.apply(color: Colors.green),
+                                ?.copyWith(color: Colors.green),
                           ),
-                          RichText(
-                            text: TextSpan(
-                              text: 'Jenis Limbah',
-                              style: Theme.of(context).textTheme.titleSmall,
-                              children: [
-                                const TextSpan(text: ' | '),
-                                TextSpan(
-                                  text: jadwal.jenisLimbah,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              text: 'Jumlah Limbah',
-                              style: Theme.of(context).textTheme.titleSmall,
-                              children: [
-                                const TextSpan(text: ' | '),
-                                TextSpan(
-                                  text: jadwal.jumlahLimbah,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            jadwal.harga,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 8.0),
+                          const SizedBox(height: 6),
+                          Text('Jenis Limbah: ${jadwal.jenisLimbah}',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          Text('Jumlah Limbah: ${jadwal.jumlahLimbah}',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          const SizedBox(height: 8),
+                          Text(jadwal.harga,
+                              style: Theme.of(context).textTheme.bodyLarge),
+                          const SizedBox(height: 8),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: Text(
-                              jadwal.status == '0'
-                                  ? 'Meminta Persetujuan'
-                                  : jadwal.status == '1'
-                                      ? 'Di Tolak'
-                                      : 'Di Terima',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: jadwal.status == '0'
-                                        ? AppColors.error
-                                        : Colors.green,
-                                  ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: jadwal.status == '0'
+                                    ? Colors.orange.withOpacity(0.1)
+                                    : Colors.green.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                jadwal.status == '0'
+                                    ? 'Meminta Persetujuan'
+                                    : (jadwal.status == '1'
+                                        ? 'Ditolak'
+                                        : 'Diterima'),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: jadwal.status == '0'
+                                          ? Colors.orange
+                                          : Colors.green,
+                                    ),
+                              ),
                             ),
                           ),
                         ],

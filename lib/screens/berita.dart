@@ -26,28 +26,27 @@ class BeritaScreen extends StatelessWidget {
           'Berita Terbaru',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
               ),
         ),
         actions: [
           if (storageUtil.getRoles() == '2')
             IconButton(
-                onPressed: () {
-                  Get.to(() => CreateBerita());
-                },
-                icon: Icon(Iconsax.add))
+              onPressed: () {
+                Get.to(() => CreateBerita(), preventDuplicates: false);
+              },
+              icon: Icon(Iconsax.add),
+            )
         ],
       ),
       body: Obx(
         () => ListView.separated(
+          padding: const EdgeInsets.all(CustomSize.sm),
           itemBuilder: (context, index) {
             final berita = controller.berita[index];
             return GestureDetector(
               onTap: () => Get.to(() => BeritaDetailScreen(model: berita)),
               child: Container(
                 width: double.infinity,
-                margin: const EdgeInsets.symmetric(
-                    horizontal: CustomSize.sm, vertical: CustomSize.xs),
                 padding: const EdgeInsets.all(CustomSize.sm),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -72,14 +71,18 @@ class BeritaScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextButton(
-                                onPressed: () {
-                                  controller.setEditState(berita);
-                                  Get.to(() => EditBeritaPage(
-                                        id: berita.id!,
-                                        image: berita.image,
-                                      ));
-                                },
-                                child: Text('Edit')),
+                              onPressed: () {
+                                controller.setEditState(berita);
+                                Get.to(
+                                  () => EditBeritaPage(
+                                    id: berita.id!,
+                                    image: berita.image,
+                                  ),
+                                  preventDuplicates: false,
+                                );
+                              },
+                              child: Text('Edit'),
+                            ),
                             TextButton(
                               onPressed: () {
                                 Get.defaultDialog(
@@ -89,6 +92,8 @@ class BeritaScreen extends StatelessWidget {
                                   textCancel: "Batal",
                                   textConfirm: "Hapus",
                                   confirmTextColor: Colors.white,
+                                  barrierDismissible:
+                                      false, // Perbaikan di sini
                                   onConfirm: () {
                                     controller.deleteBerita(
                                         berita.id!, berita.image);
@@ -96,7 +101,10 @@ class BeritaScreen extends StatelessWidget {
                                   },
                                 );
                               },
-                              child: Text('Delete'),
+                              child: Text(
+                                'Delete',
+                                style: TextStyle(color: Colors.red),
+                              ),
                             ),
                           ],
                         ),
@@ -138,7 +146,8 @@ class BeritaScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: CustomSize.spaceBtwItems),
                     Text(
-                      berita.deksripsi,
+                      berita
+                          .deksripsi, // Gunakan nama properti yang benar dari BeritaModel
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -154,6 +163,7 @@ class BeritaScreen extends StatelessWidget {
             height: CustomSize.spaceBtwItems,
           ),
           itemCount: controller.berita.length,
+          shrinkWrap: true,
         ),
       ),
     );

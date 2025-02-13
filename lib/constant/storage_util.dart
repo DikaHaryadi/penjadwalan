@@ -20,6 +20,10 @@ class StorageUtil {
     return prefs.read('Telp') ?? '';
   }
 
+  String getAlamat() {
+    return prefs.read('Alamat') ?? '';
+  }
+
   String getEmail() {
     return prefs.read('Email') ?? '';
   }
@@ -35,12 +39,14 @@ class StorageUtil {
   void saveUserDetails({
     required String name,
     required String tlp,
+    required String alamat,
     required String email,
     required String image,
     required String roles,
   }) {
     prefs.write('Name', name);
     prefs.write('Telp', tlp);
+    prefs.write('Alamat', alamat);
     prefs.write('Email', email);
     prefs.write('Image', image);
     prefs.write('Roles', roles);
@@ -73,6 +79,7 @@ class StorageUtil {
   void logout() {
     prefs.remove('Name');
     prefs.remove('Telp');
+    prefs.remove('Alamat');
     prefs.remove('Email');
     prefs.remove('Image');
     prefs.remove('Roles');

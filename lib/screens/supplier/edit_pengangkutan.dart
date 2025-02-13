@@ -40,89 +40,82 @@ class _EditPengangkutanState extends State<EditPengangkutan> {
         title: Text('Ubah Jadwal'),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ElevatedButton(
-                onPressed: () {
-                  controller.updateJadwal(
-                      id,
-                      alamat.text.trim(),
-                      harga.text.trim(),
-                      jenisLimbah.text.trim(),
-                      jumlahLimbah.text.trim(),
-                      namaUsaha.text.trim());
-                },
-                child: Text('Update')),
-          )
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                controller.updateJadwal(
+                  id,
+                  alamat.text.trim(),
+                  harga.text.trim(),
+                  jenisLimbah.text.trim(),
+                  jumlahLimbah.text.trim(),
+                  namaUsaha.text.trim(),
+                );
+              },
+              icon: Icon(Icons.update),
+              label: Text('Update'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
         ],
       ),
-      body: Form(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
           key: controller.formKey,
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Nama Perusahaan'),
-              TextFormField(
-                controller: namaUsaha,
-                keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama perusahaan is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8.0),
-              Text('Jenis limbah'),
-              TextFormField(
-                controller: jenisLimbah,
-                keyboardType: TextInputType.text,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jenis limbah is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8.0),
-              Text('Jumlah limbah'),
-              TextFormField(
-                controller: jumlahLimbah,
-                keyboardType: TextInputType.text,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jumlah limbah is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8.0),
-              Text('Harga'),
-              TextFormField(
-                controller: harga,
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Harga is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8.0),
-              Text('Alamat'),
-              TextFormField(
-                controller: alamat,
-                maxLines: 10,
-                minLines: 1,
-                keyboardType: TextInputType.text,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Alamat is required';
-                  }
-                  return null;
-                },
-              ),
+              buildInputField('Nama Perusahaan', namaUsaha, TextInputType.name),
+              buildInputField('Jenis Limbah', jenisLimbah, TextInputType.text),
+              buildInputField(
+                  'Jumlah Limbah', jumlahLimbah, TextInputType.text),
+              buildInputField('Harga', harga, TextInputType.number),
+              buildInputField('Alamat', alamat, TextInputType.text,
+                  maxLines: 3),
             ],
-          )),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildInputField(
+      String label, TextEditingController controller, TextInputType inputType,
+      {int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+          ),
+          const SizedBox(height: 4.0),
+          TextFormField(
+            controller: controller,
+            keyboardType: inputType,
+            maxLines: maxLines,
+            decoration: InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return '$label is required';
+              }
+              return null;
+            },
+          ),
+        ],
+      ),
     );
   }
 }

@@ -14,6 +14,7 @@ class AddUserController extends GetxController {
   final nameC = TextEditingController();
   final passwordC = TextEditingController();
   final telpC = TextEditingController();
+  final alamatC = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
   final tipe = 'driver'.obs;
@@ -40,6 +41,21 @@ class AddUserController extends GetxController {
         return '3';
       default:
         return '-1';
+    }
+  }
+
+  String getTipeRoles(String roles) {
+    switch (roles) {
+      case '0':
+        return 'manajer';
+      case '1':
+        return 'driver';
+      case '2':
+        return 'admin';
+      case '3':
+        return 'supplier';
+      default:
+        return 'Tidak diketahui';
     }
   }
 
@@ -104,6 +120,10 @@ class AddUserController extends GetxController {
       }
 
       if (image.value == null) {
+        SnackbarLoader.warningSnackBar(
+          title: 'Oops😪',
+          message: 'Harap masukan gambar terlebih dahulu',
+        );
         return;
       }
       final xFile = XFile(image.value!.path);
@@ -111,13 +131,14 @@ class AddUserController extends GetxController {
       final imgUrl = await uploadImage('Users/', xFile);
 
       final newUser = UserModel(
-        name: nameC.text.trim(),
-        telp: telpC.text.trim(),
-        email: emailC.text.trim(),
-        password: passwordC.text.trim(),
-        image: imgUrl,
-        roles: tipeValue,
-      );
+          name: nameC.text.trim(),
+          telp: telpC.text.trim(),
+          alamat: alamatC.text.trim(),
+          email: emailC.text.trim(),
+          password: passwordC.text.trim(),
+          image: imgUrl,
+          roles: tipeValue,
+          createdAt: Timestamp.now());
 
       await saveUserNew(newUser);
 
@@ -146,9 +167,11 @@ class AddUserController extends GetxController {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await _db.collection('Users').get();
 
-      // Mengonversi setiap dokumen ke dalam UserModel
-      final users =
-          snapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList();
+      // Mengonversi setiap dokumen ke dalam UserModel & Filter user dengan roles != '2'
+      final users = snapshot.docs
+          .map((doc) => UserModel.fromSnapshot(doc))
+          .where((user) => user.roles != '2') // Filter data di sini
+          .toList();
 
       // Menyimpan data ke dalam RxList
       userList.value = users;

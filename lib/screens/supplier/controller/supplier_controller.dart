@@ -2,32 +2,112 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../constant/storage_util.dart';
 import '../../../models/jadwal_masuk.dart';
+import '../../../models/kategori_barang_model.dart';
 import '../../../utils/loader/snackbar.dart';
 
 class SupplierController extends GetxController {
+  final localStorage = StorageUtil();
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final formKey = GlobalKey<FormState>();
+
   RxList<JadwalMasuk> userList = <JadwalMasuk>[].obs;
+  RxList<KategoriBarangModel> kategoriBarang = <KategoriBarangModel>[].obs;
 
   final namaPerusahaanC = TextEditingController();
+  final nomorTelponC = TextEditingController();
   final jenisLimbahC = TextEditingController();
   final jumlahLimbah = TextEditingController();
   final hargaC = TextEditingController();
   final alamatC = TextEditingController();
 
+  var selectedJenisLimbah = ''.obs;
+  var hargaPerSatuan = 0.0.obs;
+  var jumlahLimbahPerSatuan = 0.obs;
+  var totalHarga = 0.0.obs;
+  var satuanLimbah = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchPengangkutan();
+    fetchKategoriBarang();
+
+    // Tambahkan listener agar hargaC diperbarui secara otomatis
+    jumlahLimbah.addListener(() {
+      updateJumlahLimbah(jumlahLimbah.text);
+    });
+    namaPerusahaanC.text = localStorage.getName();
+    nomorTelponC.text = localStorage.getTelp();
+    alamatC.text = localStorage.getAlamat();
+  }
+
+  void updateHarga(String jenisLimbah) {
+    try {
+      final selectedLimbah = kategoriBarang.firstWhere(
+        (element) =>
+            element.jenisLimbah.toLowerCase().trim() ==
+            jenisLimbah.toLowerCase().trim(),
+      );
+
+      hargaPerSatuan.value =
+          double.tryParse(selectedLimbah.hargaLimbah.toString()) ?? 0.0;
+      satuanLimbah.value = selectedLimbah.satuanLimbah;
+      selectedJenisLimbah.value = jenisLimbah;
+
+      updateTotalHarga();
+    } catch (e) {
+      hargaPerSatuan.value = 0.0;
+      satuanLimbah.value = '';
+      hargaC.text = ''; // Reset harga jika terjadi error
+    }
+  }
+
+  void updateJumlahLimbah(String jumlah) {
+    jumlahLimbahPerSatuan.value = int.tryParse(jumlah) ?? 0;
+    updateTotalHarga();
+  }
+
+  void updateTotalHarga() {
+    totalHarga.value = jumlahLimbahPerSatuan.value * hargaPerSatuan.value;
+    hargaC.text = totalHarga.value.toInt().toString();
+    // Pastikan hargaC diperbarui
+  }
+
+  Future<void> fetchKategoriBarang() async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await _db.collection('KategoriBarang').get();
+
+      kategoriBarang.value = snapshot.docs
+          .map((doc) => KategoriBarangModel.fromSnapshot(doc))
+          .toList();
+
+      print(
+          "Kategori Barang: ${kategoriBarang.map((e) => e.toJson()).toList()}");
+    } catch (e) {
+      print("Gagal mengambil data kategori barang: $e");
+    }
   }
 
   Future<void> fetchPengangkutan() async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> snapshot =
-          await _db.collection('JadwalMasuk').get();
+      String loggedInUser =
+          localStorage.getName(); // Ambil nama user yang login
+      String typeUser = localStorage.getRoles();
+      QuerySnapshot<Map<String, dynamic>> snapshot;
 
-      // Mengonversi setiap dokumen ke dalam UserModel
+      if (typeUser == '2') {
+        snapshot = await _db.collection('JadwalMasuk').get();
+      } else {
+        snapshot = await _db
+            .collection('JadwalMasuk')
+            .where('Nama_Usaha', isEqualTo: loggedInUser.trim())
+            .get();
+      }
+
+      // Konversi setiap dokumen ke dalam UserModel
       final users =
           snapshot.docs.map((doc) => JadwalMasuk.fromSnapshot(doc)).toList();
       userList.value = users;
@@ -62,6 +142,7 @@ class SupplierController extends GetxController {
 
       final newBerita = JadwalMasuk(
           namaPerusahaan: namaPerusahaanC.text.trim(),
+          noTelp: nomorTelponC.text.trim(),
           jenisLimbah: jenisLimbahC.text.trim(),
           jumlahLimbah: jumlahLimbah.text.trim(),
           alamat: alamatC.text.trim(),
@@ -194,9 +275,7 @@ class SupplierController extends GetxController {
   }
 
   void resetEditState() {
-    alamatC.clear();
-    hargaC.clear();
     jenisLimbahC.clear();
-    namaPerusahaanC.clear();
+    jumlahLimbah.clear();
   }
 }

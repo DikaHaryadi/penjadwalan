@@ -14,17 +14,22 @@ class AddUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(AddUserController());
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seluruh User'),
+        title: const Text('Seluruh User'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: ElevatedButton(
-                onPressed: () {
-                  Get.to(() => CreateUser());
-                },
-                child: Text('Tambah User')),
+            child: ElevatedButton.icon(
+              onPressed: () => Get.to(() => const CreateUser()),
+              icon: const Icon(Icons.add),
+              label: const Text('Tambah User'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+            ),
           )
         ],
       ),
@@ -32,22 +37,36 @@ class AddUser extends StatelessWidget {
         child: Obx(() {
           if (controller.userList.isEmpty) {
             return const Center(
-              child: Text('Tidak ada data pengguna'),
+              child: Text(
+                'Tidak ada data pengguna',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             );
           }
 
-          return ListView.builder(
+          return ListView.separated(
             itemCount: controller.userList.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(12.0),
+            separatorBuilder: (context, index) => const Divider(),
             itemBuilder: (context, index) {
               final user = controller.userList[index];
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(user.image),
+              return Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                title: Text(user.name),
-                subtitle: Text(user.email),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(12.0),
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(user.image),
+                  ),
+                  title: Text(
+                    user.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(user.email),
+                  trailing: Text(controller.getTipeRoles(user.roles)),
+                ),
               );
             },
           );
@@ -269,6 +288,24 @@ class CreateUser extends StatelessWidget {
                     return 'No Telp is required';
                   }
 
+                  return null;
+                },
+              ),
+              const SizedBox(height: CustomSize.spaceBtwInputFields),
+              TextFormField(
+                controller: controller.alamatC,
+                maxLines: 10,
+                minLines: 1,
+                decoration: InputDecoration(
+                  label: Text(
+                    'Alamat',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Alamat is required';
+                  }
                   return null;
                 },
               ),

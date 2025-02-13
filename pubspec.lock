@@ -918,10 +918,18 @@ packages:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "213ada2c3b3555a73cb0eb1530d24d27dcf1a0a1555c0f00dd3e1486b01878ad"
+      sha256: dafeebdf8673d6dd874191bf579bc17c76b4b84e09fc0e4ae5bc7e56c0c91f4b
       url: "https://pub.dev"
     source: hosted
-    version: "28.2.3"
+    version: "28.2.5"
+  syncfusion_flutter_datagrid:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datagrid
+      sha256: "72681959f9c56abb4d9a872f9657052903bf935ef9d89fbbe052a7d23eca8d8c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.2.5"
   syncfusion_flutter_pdf:
     dependency: transitive
     description:

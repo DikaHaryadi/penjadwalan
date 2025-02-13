@@ -113,6 +113,31 @@ class TableEventsController extends GetxController {
     }
   }
 
+  Future<void> updateStatusPengangkutan(String driverName) async {
+    final firestore = FirebaseFirestore.instance;
+
+    // Cari ID dokumen di koleksi MasterDriver berdasarkan Nama_Driver
+    final querySnapshot = await firestore
+        .collection('MasterDriver')
+        .where('Nama_Driver', isEqualTo: driverName)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // Ambil document ID pertama yang cocok
+      final driverDocId = querySnapshot.docs.first.id;
+
+      // Update Status_Pengangkutan menjadi '1'
+      await firestore.collection('MasterDriver').doc(driverDocId).update({
+        'Status_Pengangkutan': '1',
+      });
+
+      print('Status_Pengangkutan diperbarui untuk $driverName');
+    } else {
+      print('Driver dengan nama $driverName tidak ditemukan.');
+    }
+  }
+
   Future<void> editStatusByTanggal(DateTime tanggal, String status) async {
     try {
       final eventsToUpdate = events
@@ -134,16 +159,15 @@ class TableEventsController extends GetxController {
       for (var event in eventsToUpdate) {
         final docRef = _firestore.collection('BuatJadwal').doc(event.id);
         await docRef.update({'Status': '2'}); // Ubah status menjadi '2'
-
-        // Remove the event from the local list after updating status
+        // 🔥 Update Status_Pengangkutan di MasterDriver
+        await updateStatusPengangkutan(event.driver);
+        // Hapus dari list lokal setelah update
         events.removeWhere((e) => e.id == event.id);
       }
 
-      // Update selectedEvents.value to reflect the changes in the UI
+      // Update UI
       selectedEvents.value = getEventsForDay(selectedDay.value!);
-
-      // Notify listeners to trigger UI update
-      update(); // or refresh(), depending on your setup
+      update();
 
       Get.snackbar(
         'Success',
@@ -160,6 +184,7 @@ class TableEventsController extends GetxController {
         colorText: Colors.white,
         icon: const Icon(Icons.error, color: Colors.white),
       );
+      print('INI ERROR YG TERJADI : $e');
     }
   }
 }

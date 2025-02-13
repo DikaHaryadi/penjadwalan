@@ -74,6 +74,7 @@ class LoginController extends GetxController {
       storageUtil.saveUserDetails(
         name: user.name,
         tlp: user.telp,
+        alamat: user.alamat,
         email: user.email,
         image: user.image,
         roles: user.roles,

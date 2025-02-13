@@ -10,6 +10,7 @@ class JadwalMasukView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SupplierController());
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -21,25 +22,26 @@ class JadwalMasukView extends StatelessWidget {
       body: Obx(() {
         if (controller.userList.isEmpty) {
           return const Center(
-            child: Text('Tidak ada data'),
+            child: Text(
+              'Tidak ada data',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           );
         }
         return ListView.builder(
           itemCount: controller.userList.length,
-          padding: const EdgeInsets.only(top: 12.0),
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
+          padding: const EdgeInsets.all(12.0),
           itemBuilder: (context, index) {
             final jadwal = controller.userList[index];
             return Card(
               margin:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-              elevation: 4.0,
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              elevation: 6.0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
+                borderRadius: BorderRadius.circular(16.0),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -49,25 +51,30 @@ class JadwalMasukView extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                            ?.copyWith(
+                                fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                     ),
-                    Divider(),
-                    Text('Alamat :',
-                        style: Theme.of(context).textTheme.labelMedium),
+                    const SizedBox(height: 8),
+                    Divider(color: Colors.grey.shade300),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Alamat :',
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
                     Text(
                       jadwal.alamat,
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
-                          ?.apply(color: Colors.green),
+                          ?.copyWith(color: Colors.green, fontSize: 14),
                     ),
+                    const SizedBox(height: 8),
                     RichText(
                       text: TextSpan(
-                        text: 'Jenis Limbah',
+                        text: 'Jenis Limbah: ',
                         style: Theme.of(context).textTheme.titleSmall,
                         children: [
-                          const TextSpan(text: ' | '),
                           TextSpan(
                             text: jadwal.jenisLimbah,
                             style: Theme.of(context).textTheme.bodyMedium,
@@ -75,45 +82,62 @@ class JadwalMasukView extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 4),
                     Text(
-                      jadwal.harga,
+                      'Harga: ${jadwal.harga}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 16.0),
                     if (jadwal.status == '0')
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          OutlinedButton(
+                          Tooltip(
+                            message: 'Tolak jadwal ini',
+                            child: FilledButton.tonal(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                                foregroundColor: Colors.white,
+                              ),
                               onPressed: () =>
                                   controller.updateStatus(jadwal.id!, '1'),
-                              child: Text('Tolak')),
-                          ElevatedButton(
+                              child: const Text('Tolak'),
+                            ),
+                          ),
+                          Tooltip(
+                            message: 'Terima jadwal ini',
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                              ),
                               onPressed: () =>
                                   controller.updateStatus(jadwal.id!, '2'),
-                              child: Text('Terima'))
+                              child: const Text('Terima'),
+                            ),
+                          ),
                         ],
                       ),
                     if (jadwal.status == '1')
                       Center(
                         child: Text(
-                          'Jadwal Masuk Di Tolak',
+                          'Jadwal Masuk Ditolak',
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium
-                              ?.apply(color: Colors.red),
+                              ?.copyWith(color: Colors.red, fontSize: 16),
                         ),
                       ),
                     if (jadwal.status == '2')
                       Center(
                         child: Text(
-                          'Jadwal Masuk Di Terima',
+                          'Jadwal Masuk Diterima',
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium
-                              ?.apply(color: Colors.green),
+                              ?.copyWith(color: Colors.green, fontSize: 16),
                         ),
-                      )
+                      ),
                   ],
                 ),
               ),

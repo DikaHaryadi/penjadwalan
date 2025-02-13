@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../supplier/controller/supplier_controller.dart';
 import 'controllers/buatjadwal_controller.dart';
+import 'controllers/master_driver_controller.dart';
 
 class CreateJadwal extends StatelessWidget {
   const CreateJadwal({super.key});
@@ -12,6 +13,7 @@ class CreateJadwal extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<BuatjadwalController>();
     final supplierController = Get.put(SupplierController());
+    final masterDriver = Get.put(MasterDriverController());
     return Scaffold(
       appBar: AppBar(
         title: Text('Buat Jadwal Baru'),
@@ -84,36 +86,57 @@ class CreateJadwal extends StatelessWidget {
             children: [
               Text('Nama usaha'),
               Obx(() {
-                String? selectedValue = supplierController.userList.isEmpty
-                    ? null
-                    : controller.namaUsahaC.text.isEmpty
-                        ? 'Pilih Nama Perusahaan' // Default value
-                        : controller.namaUsahaC.text;
+                // Tentukan nilai default yang dipilih
+                String? selectedNamaPerusahaan =
+                    supplierController.userList.isEmpty
+                        ? null
+                        : controller.namaUsahaC.text.isEmpty
+                            ? 'Pilih Nama Perusahaan'
+                            : controller.namaUsahaC.text;
+
+                // Ambil semua nama perusahaan yang memiliki status '2'
+                final dropdownValues = supplierController.userList
+                    .where((supplier) => supplier.status == '2')
+                    .map((e) => e.namaPerusahaan)
+                    .toList();
+
+                // Debugging: Cetak daftar perusahaan yang ada
+                print("=== Dropdown Values ===");
+                print(dropdownValues);
+
+                // Pastikan nilai selectedNamaPerusahaan ada di dalam dropdown
+                if (!dropdownValues.contains(selectedNamaPerusahaan)) {
+                  selectedNamaPerusahaan = 'Pilih Nama Perusahaan';
+                }
+
+                print("Selected Nama Perusahaan: $selectedNamaPerusahaan");
 
                 return DropdownButtonFormField<String>(
-                  value: selectedValue,
+                  value: selectedNamaPerusahaan,
                   items: [
                     DropdownMenuItem<String>(
                       value: 'Pilih Nama Perusahaan',
                       child: Text('Pilih Nama Perusahaan'),
                     ),
-                    // Filter userList untuk hanya menampilkan yang statusnya '2'
+                    // Tambahkan hanya perusahaan dengan status '2'
                     ...supplierController.userList
-                        .where((supplier) =>
-                            supplier.status == '2') // Hanya yang status '2'
-                        .map((supplier) => DropdownMenuItem(
-                              value: supplier.namaPerusahaan,
-                              child: Text(supplier.namaPerusahaan),
-                            ))
-                        .toList(),
+                        .where((supplier) => supplier.status == '2')
+                        .map((supplier) {
+                      print(
+                          "Menambahkan ke dropdown: ${supplier.namaPerusahaan}");
+                      return DropdownMenuItem(
+                        value: supplier.namaPerusahaan,
+                        child: Text(supplier.namaPerusahaan),
+                      );
+                    }),
                   ],
                   onChanged: (value) {
                     if (value != null && value != 'Pilih Nama Perusahaan') {
-                      // Cari data yang sesuai dengan nama usaha yang dipilih
+                      // Cari data berdasarkan nama perusahaan yang dipilih
                       final selectedSupplier = supplierController.userList
                           .firstWhere((s) => s.namaPerusahaan == value);
 
-                      // Set nilai pada controller sesuai dengan data yang ditemukan
+                      // Set nilai ke controller
                       controller.namaUsahaC.text =
                           selectedSupplier.namaPerusahaan;
                       controller.alamatC.text = selectedSupplier.alamat;
@@ -122,21 +145,11 @@ class CreateJadwal extends StatelessWidget {
                           selectedSupplier.jenisLimbah;
                       controller.jumlahLimbahC.text =
                           selectedSupplier.jumlahLimbah;
+                      controller.telpC.text = selectedSupplier.noTelp;
                     }
                   },
                 );
               }),
-
-              // TextFormField(
-              //   controller: controller.namaUsahaC,
-              //   keyboardType: TextInputType.text,
-              //   validator: (value) {
-              //     if (value == null || value.isEmpty) {
-              //       return 'Nama usaha is required';
-              //     }
-              //     return null;
-              //   },
-              // ),
               const SizedBox(height: 8.0),
               Text('Tanggal'),
               Obx(
@@ -150,7 +163,8 @@ class CreateJadwal extends StatelessWidget {
                           context: context,
                           locale: const Locale("id", "ID"),
                           initialDate: controller.tgl.value,
-                          firstDate: DateTime(1850),
+                          firstDate: DateTime
+                              .now(), // Membatasi tanggal sebelum hari ini
                           lastDate: DateTime(2040),
                         ).then((newSelectedDate) {
                           if (newSelectedDate != null) {
@@ -182,16 +196,44 @@ class CreateJadwal extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               Text('Nama Driver'),
-              TextFormField(
-                controller: controller.driverC,
-                keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama is required';
-                  }
-                  return null;
-                },
-              ),
+              Obx(() {
+                String? selectedValue = masterDriver.userList.isEmpty
+                    ? null
+                    : controller.driverC.text.isEmpty
+                        ? 'Pilih Nama Driver' // Default value
+                        : controller.driverC.text;
+
+                return DropdownButtonFormField<String>(
+                  value: selectedValue,
+                  items: [
+                    DropdownMenuItem<String>(
+                      value: 'Pilih Nama Driver',
+                      child: Text('Pilih Nama Driver'),
+                    ),
+                    // Filter userList agar tidak menampilkan nama perusahaan yang sudah ada di Firebase
+                    ...masterDriver.userList
+                        .where((supplier) =>
+                            (supplier.statusPengangkutan == '0' ||
+                                supplier.statusPengangkutan == '1'))
+                        .map((supplier) => DropdownMenuItem(
+                              value: supplier.namaDriver,
+                              child: Text(supplier.namaDriver),
+                            ))
+                        .toList(),
+                  ],
+                  onChanged: (value) {
+                    if (value != null && value != 'Pilih Nama Driver') {
+                      // Cari data yang sesuai dengan nama usaha yang dipilih
+                      final selectedSupplier = masterDriver.userList
+                          .firstWhere((s) => s.namaDriver == value);
+
+                      // Set nilai pada controller sesuai dengan data yang ditemukan
+                      controller.driverC.text = selectedSupplier.namaDriver;
+                      controller.platNomorC.text = selectedSupplier.platNomor;
+                    }
+                  },
+                );
+              }),
               const SizedBox(height: 8.0),
               Text('Harga'),
               TextFormField(
@@ -232,7 +274,7 @@ class CreateJadwal extends StatelessWidget {
               Text('Plat nomor'),
               TextFormField(
                 controller: controller.platNomorC,
-                keyboardType: TextInputType.text,
+                readOnly: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Plat nomor is required';
@@ -244,7 +286,7 @@ class CreateJadwal extends StatelessWidget {
               Text('No Telp'),
               TextFormField(
                 controller: controller.telpC,
-                keyboardType: TextInputType.phone,
+                readOnly: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'No Telp is required';
@@ -257,12 +299,32 @@ class CreateJadwal extends StatelessWidget {
               TextFormField(
                 controller: controller.waktuC,
                 keyboardType: TextInputType.text,
+                readOnly: true, // Supaya user tidak bisa mengetik manual
+                onTap: () async {
+                  TimeOfDay? pickedTime = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  );
+
+                  if (!context.mounted) return; // Pastikan context masih valid
+
+                  if (pickedTime != null) {
+                    // Format waktu menjadi HH:mm (24 jam format)
+                    final formattedTime = pickedTime.format(context);
+                    controller.waktuC.text =
+                        formattedTime; // Set hasil ke TextFormField
+                  }
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Waktu is required';
                   }
                   return null;
                 },
+                decoration: InputDecoration(
+                  hintText: "Pilih Waktu",
+                  suffixIcon: Icon(Icons.access_time), // Tambahkan ikon jam
+                ),
               ),
             ],
           ),

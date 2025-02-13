@@ -3,18 +3,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserModel {
   String name;
   String telp;
+  String alamat;
   String email;
   String? password;
   String image;
   String roles;
+  Timestamp? createdAt;
 
   UserModel({
     required this.name,
     required this.telp,
+    required this.alamat,
     required this.email,
     this.password,
     required this.image,
     required this.roles,
+    this.createdAt,
   });
 
   String get nameUser => name;
@@ -22,6 +26,7 @@ class UserModel {
   static UserModel empty() => UserModel(
         name: '',
         telp: '',
+        alamat: '',
         email: '',
         password: '',
         image: '',
@@ -32,10 +37,12 @@ class UserModel {
     return {
       'Name': name,
       'Telp': telp,
+      'Alamat': alamat,
       'Email': email,
       'Password': password,
       'Image': image,
       'Roles': roles,
+      'createdAt': createdAt,
     };
   }
 
@@ -47,10 +54,12 @@ class UserModel {
       return UserModel(
         name: data?['Name'] ?? '',
         telp: data?['Telp'] ?? '',
+        alamat: data?['Alamat'] ?? '',
         email: data?['Email'] ?? '',
         password: data?['Password'] ?? '',
         image: data?['Image'] ?? '',
         roles: data?['Roles'] ?? '',
+        createdAt: data?['createdAt'],
       );
     } else {
       return UserModel.empty();

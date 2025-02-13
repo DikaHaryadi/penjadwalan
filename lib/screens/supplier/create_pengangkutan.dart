@@ -17,74 +17,136 @@ class CreatePengangkutan extends StatelessWidget {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ElevatedButton(
-                onPressed: () {
-                  controller.createJadwal();
-                },
-                child: Text('Tambah')),
-          )
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ElevatedButton.icon(
+              onPressed: controller.createJadwal,
+              icon: Icon(Icons.add),
+              label: Text('Tambah'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
         ],
       ),
-      body: Form(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
           key: controller.formKey,
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Nama perusahaan'),
+              Text(
+                'Nama Perusahaan',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
               TextFormField(
                 controller: controller.namaPerusahaanC,
-                keyboardType: TextInputType.text,
+                readOnly: true,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Nama usaha is required';
+                    return 'Nama Perusahaan is required';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 8.0),
-              Text('Jenis limbah'),
+              Text(
+                'Nomor telpon',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
               TextFormField(
-                controller: controller.jenisLimbahC,
-                keyboardType: TextInputType.text,
+                controller: controller.nomorTelponC,
+                readOnly: true,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Jenis limbah is required';
+                    return 'Nomor telpon is required';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 8.0),
-              Text('Jumlah limbah'),
-              TextFormField(
+              Text(
+                'Jenis Limbah',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
+              Obx(() {
+                return DropdownButtonFormField<String>(
+                  value: controller.selectedJenisLimbah.value.isNotEmpty
+                      ? controller.selectedJenisLimbah.value
+                      : null,
+                  hint: Text('Pilih Jenis Limbah'),
+                  items: controller.kategoriBarang.map((supplier) {
+                    return DropdownMenuItem(
+                      value: supplier.jenisLimbah,
+                      child: Text(supplier.jenisLimbah),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.jenisLimbahC.text =
+                          value; // 🔥 Simpan nilai ke controller
+                      controller.updateHarga(value);
+                    }
+                  },
+                );
+              }),
+              _buildTextField(
+                label: 'Jumlah Limbah',
                 controller: controller.jumlahLimbah,
-                keyboardType: TextInputType.text,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jumlah limbah is required';
+                validatorMsg: 'Jumlah Limbah is required',
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    controller
+                        .updateHarga(controller.selectedJenisLimbah.value);
                   }
-                  return null;
                 },
               ),
-              const SizedBox(height: 8.0),
-              Text('Harga'),
+              Text(
+                'Harga Limbah',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
               TextFormField(
                 controller: controller.hargaC,
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Harga is required';
-                  }
-                  return null;
-                },
+                readOnly: true,
+                decoration: InputDecoration(
+                  suffix: Obx(() => Text(controller
+                      .satuanLimbah.value)), // 🔥 Pastikan satuan diperbarui
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
               ),
-              const SizedBox(height: 8.0),
-              Text('Alamat'),
+              Text(
+                'Alamat',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
               TextFormField(
                 controller: controller.alamatC,
-                maxLines: 10,
-                minLines: 1,
-                keyboardType: TextInputType.text,
+                readOnly: true,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Alamat is required';
@@ -93,7 +155,50 @@ class CreatePengangkutan extends StatelessWidget {
                 },
               ),
             ],
-          )),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required String validatorMsg,
+    int maxLines = 1,
+    void Function(String)? onChanged, // Tambahkan onChanged di sini
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+          ),
+          const SizedBox(height: 4.0),
+          TextFormField(
+            controller: controller,
+            keyboardType: TextInputType.text,
+            maxLines: maxLines,
+            decoration: InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return validatorMsg;
+              }
+              return null;
+            },
+            onChanged: onChanged, // Gunakan onChanged di sini
+          ),
+        ],
+      ),
     );
   }
 }

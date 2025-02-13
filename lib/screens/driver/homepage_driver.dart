@@ -666,24 +666,24 @@ class HomepageDriver extends StatelessWidget {
     );
   }
 
-  Widget _buildEventsMarker(DateTime date, int eventCount) {
-    return Container(
-      width: 16.0, // Set the width
-      height: 16.0, // Set the height
-      decoration: const BoxDecoration(
-        color: Colors.blue, // Customize color based on your requirements
-        shape: BoxShape.circle, // Ensures the container is circular
-      ),
-      child: Center(
-        child: Text(
-          eventCount.toString(), // Display the event count
-          style: const TextStyle(
-            color: Colors.white, // Text color inside the circle
-            fontSize: 10.0, // Adjusted font size for better fit
-            fontWeight: FontWeight.bold, // Optional: make the text bold
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildEventsMarker(DateTime date, int eventCount) {
+  //   return Container(
+  //     width: 16.0, // Set the width
+  //     height: 16.0, // Set the height
+  //     decoration: const BoxDecoration(
+  //       color: Colors.blue, // Customize color based on your requirements
+  //       shape: BoxShape.circle, // Ensures the container is circular
+  //     ),
+  //     child: Center(
+  //       child: Text(
+  //         eventCount.toString(), // Display the event count
+  //         style: const TextStyle(
+  //           color: Colors.white, // Text color inside the circle
+  //           fontSize: 10.0, // Adjusted font size for better fit
+  //           fontWeight: FontWeight.bold, // Optional: make the text bold
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
