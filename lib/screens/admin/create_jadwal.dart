@@ -1,3 +1,4 @@
+import 'package:example/models/jadwal_masuk.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +34,8 @@ class CreateJadwal extends StatelessWidget {
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
 
-          if (controller.waktuC.text.isEmpty &&
+          if (controller.selectedValue.value == null &&
+              controller.waktuC.text.isEmpty &&
               controller.telpC.text.isEmpty &&
               controller.platNomorC.text.isEmpty &&
               controller.jumlahLimbahC.text.isEmpty &&
@@ -85,71 +87,44 @@ class CreateJadwal extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
             children: [
               Text('Nama usaha'),
-              Obx(() {
-                // Tentukan nilai default yang dipilih
-                String? selectedNamaPerusahaan =
-                    supplierController.userList.isEmpty
-                        ? null
-                        : controller.namaUsahaC.text.isEmpty
-                            ? 'Pilih Nama Perusahaan'
-                            : controller.namaUsahaC.text;
-
-                // Ambil semua nama perusahaan yang memiliki status '2'
-                final dropdownValues = supplierController.userList
-                    .where((supplier) => supplier.status == '2')
-                    .map((e) => e.namaPerusahaan)
-                    .toList();
-
-                // Debugging: Cetak daftar perusahaan yang ada
-                print("=== Dropdown Values ===");
-                print(dropdownValues);
-
-                // Pastikan nilai selectedNamaPerusahaan ada di dalam dropdown
-                if (!dropdownValues.contains(selectedNamaPerusahaan)) {
-                  selectedNamaPerusahaan = 'Pilih Nama Perusahaan';
-                }
-
-                print("Selected Nama Perusahaan: $selectedNamaPerusahaan");
-
-                return DropdownButtonFormField<String>(
-                  value: selectedNamaPerusahaan,
-                  items: [
-                    DropdownMenuItem<String>(
-                      value: 'Pilih Nama Perusahaan',
-                      child: Text('Pilih Nama Perusahaan'),
+              Obx(() => DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
-                    // Tambahkan hanya perusahaan dengan status '2'
-                    ...supplierController.userList
-                        .where((supplier) => supplier.status == '2')
-                        .map((supplier) {
-                      print(
-                          "Menambahkan ke dropdown: ${supplier.namaPerusahaan}");
-                      return DropdownMenuItem(
-                        value: supplier.namaPerusahaan,
-                        child: Text(supplier.namaPerusahaan),
-                      );
-                    }),
-                  ],
-                  onChanged: (value) {
-                    if (value != null && value != 'Pilih Nama Perusahaan') {
-                      // Cari data berdasarkan nama perusahaan yang dipilih
-                      final selectedSupplier = supplierController.userList
-                          .firstWhere((s) => s.namaPerusahaan == value);
+                    value: controller.selectedValue.value, // Tidak ada default
+                    hint: Text(
+                        "Pilih usaha"), // Tambahkan hint untuk tampilan awal
+                    items: controller.dropdownItems
+                        .map((item) => DropdownMenuItem<String>(
+                              value: item,
+                              child: Text(item),
+                            ))
+                        .toList(),
+                    onChanged: (newValue) {
+                      if (newValue != null) {
+                        controller.selectedValue.value =
+                            newValue; // Simpan nilai yang dipilih
 
-                      // Set nilai ke controller
-                      controller.namaUsahaC.text =
-                          selectedSupplier.namaPerusahaan;
-                      controller.alamatC.text = selectedSupplier.alamat;
-                      controller.hargaC.text = selectedSupplier.harga;
-                      controller.jenisLimbahC.text =
-                          selectedSupplier.jenisLimbah;
-                      controller.jumlahLimbahC.text =
-                          selectedSupplier.jumlahLimbah;
-                      controller.telpC.text = selectedSupplier.noTelp;
-                    }
-                  },
-                );
-              }),
+                        // Cari data berdasarkan Nama_Usaha yang dipilih
+                        final selectedData = supplierController.userList
+                            .firstWhere((e) => e.namaPerusahaan == newValue,
+                                orElse: () => JadwalMasuk.empty());
+
+                        controller.namaUsahaC.text =
+                            selectedData.namaPerusahaan;
+                        controller.alamatC.text = selectedData.alamat;
+                        controller.hargaC.text = selectedData.harga;
+                        controller.jenisLimbahC.text = selectedData.jenisLimbah;
+                        controller.jumlahLimbahC.text =
+                            selectedData.jumlahLimbah;
+                        controller.telpC.text = selectedData.noTelp;
+                      }
+                    },
+                  )),
               const SizedBox(height: 8.0),
               Text('Tanggal'),
               Obx(
@@ -212,9 +187,8 @@ class CreateJadwal extends StatelessWidget {
                     ),
                     // Filter userList agar tidak menampilkan nama perusahaan yang sudah ada di Firebase
                     ...masterDriver.userList
-                        .where((supplier) =>
-                            (supplier.statusPengangkutan == '0' ||
-                                supplier.statusPengangkutan == '1'))
+                        .where(
+                            (supplier) => (supplier.statusPengangkutan == '0'))
                         .map((supplier) => DropdownMenuItem(
                               value: supplier.namaDriver,
                               child: Text(supplier.namaDriver),

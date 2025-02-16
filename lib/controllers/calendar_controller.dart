@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../utils/loader/snackbar.dart';
+
 class TableEventsController extends GetxController {
+  RxBool isLoading = false.obs;
   final CalendarRepository _calendarRepository = CalendarRepository();
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
   var selectedEvents = <Event>[].obs;
   var calendarFormat = CalendarFormat.month.obs;
   var rangeSelectionMode = RangeSelectionMode.toggledOff.obs;
@@ -15,6 +19,7 @@ class TableEventsController extends GetxController {
   var rangeStart = Rx<DateTime?>(null);
   var rangeEnd = Rx<DateTime?>(null);
   var events = <Event>[].obs;
+  var seluruhDaftarPengangkutanModels = <SeluruhDaftarPengangkutanModel>[].obs;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -25,6 +30,7 @@ class TableEventsController extends GetxController {
       events.value = eventList;
       selectedEvents.value = getEventsForDay(selectedDay.value!);
     });
+    fetchUser();
   }
 
   List<Event> getEventsForDay(DateTime day) {
@@ -113,7 +119,8 @@ class TableEventsController extends GetxController {
     }
   }
 
-  Future<void> updateStatusPengangkutan(String driverName) async {
+  Future<void> updateStatusPengangkutan(
+      String driverName, String statusPengangkutan) async {
     final firestore = FirebaseFirestore.instance;
 
     // Cari ID dokumen di koleksi MasterDriver berdasarkan Nama_Driver
@@ -129,7 +136,7 @@ class TableEventsController extends GetxController {
 
       // Update Status_Pengangkutan menjadi '1'
       await firestore.collection('MasterDriver').doc(driverDocId).update({
-        'Status_Pengangkutan': '1',
+        'Status_Pengangkutan': statusPengangkutan,
       });
 
       print('Status_Pengangkutan diperbarui untuk $driverName');
@@ -138,7 +145,8 @@ class TableEventsController extends GetxController {
     }
   }
 
-  Future<void> editStatusByTanggal(DateTime tanggal, String status) async {
+  Future<void> editStatusByTanggal(
+      DateTime tanggal, String status, String updateStatus) async {
     try {
       final eventsToUpdate = events
           .where((event) =>
@@ -158,11 +166,19 @@ class TableEventsController extends GetxController {
 
       for (var event in eventsToUpdate) {
         final docRef = _firestore.collection('BuatJadwal').doc(event.id);
-        await docRef.update({'Status': '2'}); // Ubah status menjadi '2'
+        await docRef
+            .update({'Status': updateStatus}); // Ubah status menjadi '2'
         // 🔥 Update Status_Pengangkutan di MasterDriver
-        await updateStatusPengangkutan(event.driver);
+        if (updateStatus == '2') {
+          await updateStatusPengangkutan(event.driver, '1');
+        }
+        if (updateStatus == '3') {
+          await updateStatusPengangkutan(
+              event.driver, '0'); // balik lagi driver bisa digunain
+        }
+
         // Hapus dari list lokal setelah update
-        events.removeWhere((e) => e.id == event.id);
+        // if (updateStatus == '3') events.removeWhere((e) => e.id == event.id);
       }
 
       // Update UI
@@ -185,6 +201,35 @@ class TableEventsController extends GetxController {
         icon: const Icon(Icons.error, color: Colors.white),
       );
       print('INI ERROR YG TERJADI : $e');
+    }
+  }
+
+  Future<void> fetchUser() async {
+    isLoading.value = true;
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+          .collection('BuatJadwal')
+          .where('Status', isEqualTo: '3')
+          .orderBy('createdAt',
+              descending: false) // Pastikan 'createdAt' memiliki index
+          .get();
+
+      final users = snapshot.docs
+          .map((doc) => SeluruhDaftarPengangkutanModel.fromSnapshot(doc))
+          .toList();
+
+      seluruhDaftarPengangkutanModels
+          .assignAll(users); // Gunakan assignAll agar GetX reaktif
+      print(
+          'Data berhasil diambil: ${seluruhDaftarPengangkutanModels.length} items');
+    } catch (e) {
+      SnackbarLoader.errorSnackBar(
+        title: 'Error',
+        message: 'Gagal mengambil data: $e',
+      );
+      print('Error saat fetchUser: $e');
+    } finally {
+      isLoading.value = false;
     }
   }
 }

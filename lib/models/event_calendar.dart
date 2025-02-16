@@ -13,6 +13,7 @@ class Event {
   final DateTime? date;
   String telp;
   String waktu;
+  Timestamp? createdAt;
 
   Event({
     this.id,
@@ -27,6 +28,7 @@ class Event {
     required this.date,
     required this.telp,
     required this.waktu,
+    this.createdAt,
   });
 
   @override
@@ -76,7 +78,8 @@ class Event {
       'Status': status,
       'Tanggal': date != null ? Timestamp.fromDate(date!) : null,
       'Telp': telp,
-      'Waktu': waktu
+      'Waktu': waktu,
+      'createdAt': createdAt,
     };
   }
 
@@ -97,6 +100,7 @@ class Event {
       date: timestamp?.toDate(), // Konversi Timestamp ke DateTime
       telp: data['Telp'] ?? '',
       waktu: data['Waktu'] ?? '',
+      createdAt: data['createdAt'],
     );
   }
 }
@@ -110,4 +114,55 @@ List<DateTime> daysInRange(DateTime start, DateTime end) {
     days.add(DateTime(start.year, start.month, start.day + i));
   }
   return days;
+}
+
+class SeluruhDaftarPengangkutanModel {
+  final String? id;
+  String alamat;
+  String driver;
+  String harga;
+  String jenisLimbah;
+  String jumlahLimbah;
+  String namaUsaha;
+  String platNomer;
+  String status;
+  final DateTime? date;
+  String telp;
+  String waktu;
+
+  SeluruhDaftarPengangkutanModel({
+    this.id,
+    required this.alamat,
+    required this.driver,
+    required this.harga,
+    required this.jenisLimbah,
+    required this.jumlahLimbah,
+    required this.namaUsaha,
+    required this.platNomer,
+    required this.status,
+    required this.date,
+    required this.telp,
+    required this.waktu,
+  });
+
+  factory SeluruhDaftarPengangkutanModel.fromSnapshot(
+      QueryDocumentSnapshot document) {
+    final data = document.data() as Map<String, dynamic>;
+    final timestamp =
+        data['Tanggal'] as Timestamp?; // Pastikan ini menangani Timestamp
+    return SeluruhDaftarPengangkutanModel(
+      id: document.id,
+      alamat: data['Alamat'] ?? '',
+      driver: data['Driver'] ?? '',
+      harga: data['Harga'] ?? '',
+      jenisLimbah: data['Jenis_Limbah'] ?? '',
+      jumlahLimbah: data['Jumlah_Limbah'] ?? '',
+      namaUsaha: data['Nama_Usaha'] ?? '',
+      platNomer: data['Plat_Nomer'] ?? '',
+      status: data['Status'] ?? '',
+      date: timestamp?.toDate(), // Konversi Timestamp ke DateTime
+      telp: data['Telp'] ?? '',
+      waktu: data['Waktu'] ?? '',
+    );
+  }
 }

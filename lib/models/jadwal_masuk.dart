@@ -21,6 +21,16 @@ class JadwalMasuk {
     required this.status,
   });
 
+  static JadwalMasuk empty() => JadwalMasuk(
+        namaPerusahaan: '',
+        noTelp: '',
+        jenisLimbah: '',
+        jumlahLimbah: '',
+        harga: '',
+        alamat: '',
+        status: '',
+      );
+
   factory JadwalMasuk.fromSnapshot(QueryDocumentSnapshot document) {
     final data = document.data() as Map<String, dynamic>;
 

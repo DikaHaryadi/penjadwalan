@@ -9,6 +9,10 @@ class BuatjadwalController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   RxList<Event> userList = <Event>[].obs;
 
+  // dropdown nama perusahaan
+  var dropdownItems = <String>[].obs;
+  var selectedValue = RxnString();
+
   final formKey = GlobalKey<FormState>();
   final tgl = DateTime.now().obs;
   final alamatC = TextEditingController();
@@ -25,6 +29,7 @@ class BuatjadwalController extends GetxController {
   void onInit() {
     super.onInit();
     fetchJadwal();
+    fetchFilteredJadwalMasuk();
   }
 
   Future<void> fetchJadwal() async {
@@ -42,6 +47,45 @@ class BuatjadwalController extends GetxController {
         message: 'Gagal mengambil data: $e',
       );
       print('ini err : ${e.toString()}');
+    }
+  }
+
+  Future<void> fetchFilteredJadwalMasuk() async {
+    try {
+      // Ambil semua data dari JadwalMasuk
+      QuerySnapshot jadwalMasukSnapshot =
+          await _db.collection('JadwalMasuk').get();
+      List<Map<String, dynamic>> jadwalMasukList = jadwalMasukSnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      // Ambil semua data dari BuatJadwal
+      QuerySnapshot buatJadwalSnapshot =
+          await _db.collection('BuatJadwal').get();
+      List<Map<String, dynamic>> buatJadwalList = buatJadwalSnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      // Filter data: hanya yang tidak ada di BuatJadwal
+      List<String> filteredNamaUsaha = jadwalMasukList
+          .where((jadwalMasuk) {
+            return !buatJadwalList.any((buatJadwal) =>
+                buatJadwal['Nama_Usaha'] == jadwalMasuk['Nama_Usaha'] &&
+                buatJadwal['Jenis_Limbah'] == jadwalMasuk['Jenis_Limbah'] &&
+                buatJadwal['Jumlah_Limbah'] == jadwalMasuk['Jumlah_Limbah']);
+          })
+          .map((e) => e['Nama_Usaha'].toString())
+          .where((nama) => nama.isNotEmpty) // Hindari nilai kosong
+          .toSet() // Hilangkan duplikasi
+          .toList();
+
+      // Update dropdownItems
+      dropdownItems.assignAll(filteredNamaUsaha);
+
+      // Reset nilai dropdown agar tidak otomatis memilih yang pertama
+      selectedValue.value = null;
+    } catch (e) {
+      print("Error fetching data: $e");
     }
   }
 
@@ -66,18 +110,18 @@ class BuatjadwalController extends GetxController {
       }
 
       final newBerita = Event(
-        alamat: alamatC.text.trim(),
-        driver: driverC.text.trim(),
-        harga: hargaC.text.trim(),
-        jenisLimbah: jenisLimbahC.text.trim(),
-        jumlahLimbah: jumlahLimbahC.text.trim(),
-        namaUsaha: namaUsahaC.text.trim(),
-        platNomer: platNomorC.text.trim(),
-        status: '0',
-        date: tgl.value,
-        telp: telpC.text.trim(),
-        waktu: waktuC.text.trim(),
-      );
+          alamat: alamatC.text.trim(),
+          driver: driverC.text.trim(),
+          harga: hargaC.text.trim(),
+          jenisLimbah: jenisLimbahC.text.trim(),
+          jumlahLimbah: jumlahLimbahC.text.trim(),
+          namaUsaha: namaUsahaC.text.trim(),
+          platNomer: platNomorC.text.trim(),
+          status: '0',
+          date: tgl.value,
+          telp: telpC.text.trim(),
+          waktu: waktuC.text.trim(),
+          createdAt: Timestamp.now());
 
       await saveBeritaNew(newBerita);
       resetEditState();
@@ -189,6 +233,7 @@ class BuatjadwalController extends GetxController {
   }
 
   void resetEditState() {
+    selectedValue.value = null;
     alamatC.clear();
     driverC.clear();
     hargaC.clear();

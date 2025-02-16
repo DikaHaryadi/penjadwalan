@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/constant/custom_size.dart';
 import 'package:example/constant/storage_util.dart';
 import 'package:example/models/event_calendar.dart';
+import 'package:example/screens/driver/seluruh_daftar_pengangkutan.dart';
 import 'package:example/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,9 @@ class HomepageDriver extends StatelessWidget {
       child: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: CustomSize.spaceBtwItems),
+            padding: const EdgeInsets.only(
+                left: CustomSize.spaceBtwItems,
+                right: CustomSize.spaceBtwItems),
             child: Row(
               children: [
                 Container(
@@ -51,7 +54,16 @@ class HomepageDriver extends StatelessWidget {
                     Text(storageUtil.getName(),
                         style: Theme.of(context).textTheme.headlineMedium)
                   ],
-                )
+                ),
+                Expanded(child: Container()),
+                InkWell(
+                  onTap: () {
+                    Get.to(
+                      () => SeluruhDaftarPengangkutan(),
+                    );
+                  },
+                  child: Icon(Icons.list),
+                ),
               ],
             ),
           ),
@@ -196,14 +208,23 @@ class HomepageDriver extends StatelessWidget {
                   ),
                 )
               : ListView.builder(
-                  itemCount: controller.selectedEvents.length,
+                  itemCount: controller.selectedEvents
+                      .where((event) =>
+                          event.status != '3') // Filter event dengan status 3
+                      .length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final events = controller.selectedEvents[index];
+                    final filteredEvents = controller.selectedEvents
+                        .where((event) =>
+                            event.status !=
+                            '3') // Pastikan hanya event dengan status selain 3
+                        .toList();
+                    final events = filteredEvents[index];
+
                     return GestureDetector(
                         onTap: () {
-                          events.status == '1'
+                          events.status == '1' || events.status == '2'
                               ? showDialog(
                                   context: context,
                                   barrierDismissible: false,
@@ -370,8 +391,11 @@ class HomepageDriver extends StatelessWidget {
                                                                 '1')
                                                         ? AppColors.error
                                                             .withOpacity(0.1)
-                                                        : Colors.green
-                                                            .withOpacity(0.1),
+                                                        : events.status == '2'
+                                                            ? Colors.blue
+                                                                .withOpacity(
+                                                                    0.1)
+                                                            : Colors.green,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             8.0),
@@ -395,7 +419,10 @@ class HomepageDriver extends StatelessWidget {
                                                                 events.status ==
                                                                     '1')
                                                             ? AppColors.error
-                                                            : Colors.green,
+                                                            : events.status ==
+                                                                    '2'
+                                                                ? Colors.blue
+                                                                : Colors.green,
                                                         size: 18.0,
                                                       ),
                                                       const SizedBox(
@@ -406,7 +433,10 @@ class HomepageDriver extends StatelessWidget {
                                                             : events.status ==
                                                                     '1'
                                                                 ? 'Belum Diangkut'
-                                                                : 'Telah Diangkut',
+                                                                : events.status ==
+                                                                        '2'
+                                                                    ? 'Sedang Diangkut'
+                                                                    : 'Telah di antarkan',
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyLarge
@@ -420,8 +450,12 @@ class HomepageDriver extends StatelessWidget {
                                                                           '1')
                                                                   ? AppColors
                                                                       .error
-                                                                  : Colors
-                                                                      .green,
+                                                                  : events.status ==
+                                                                          '2'
+                                                                      ? Colors
+                                                                          .blue
+                                                                      : Colors
+                                                                          .green,
                                                             ),
                                                       ),
                                                     ],
@@ -443,17 +477,31 @@ class HomepageDriver extends StatelessWidget {
                                         ),
                                         ElevatedButton(
                                           onPressed: () async {
-                                            await controller
-                                                .editStatusByTanggal(
-                                              events.date!,
-                                              events.status,
-                                            );
-                                            Navigator.of(Get.overlayContext!)
-                                                .pop();
+                                            if (events.status == '1') {
+                                              await controller
+                                                  .editStatusByTanggal(
+                                                      events.date!,
+                                                      events.status,
+                                                      '2');
+                                              Navigator.of(Get.overlayContext!)
+                                                  .pop();
+                                            } else if (events.status == '2') {
+                                              await controller
+                                                  .editStatusByTanggal(
+                                                      events.date!,
+                                                      events.status,
+                                                      '3');
+                                              Navigator.of(Get.overlayContext!)
+                                                  .pop();
+                                            }
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: AppColors
-                                                .primary, // Warna utama tombol
+                                            backgroundColor: events.status ==
+                                                        '1' ||
+                                                    events.status == '2'
+                                                ? AppColors.primary
+                                                : Colors
+                                                    .green, // Warna utama tombol
                                             elevation:
                                                 4, // Tinggi bayangan tombol
                                             shape: RoundedRectangleBorder(
@@ -479,23 +527,14 @@ class HomepageDriver extends StatelessWidget {
                                                   0.1), // Efek klik (ripple)
                                             ),
                                           ),
-                                          child: const Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.check_circle,
-                                                color: Colors.white,
-                                                size: 20,
-                                              ),
-                                              SizedBox(width: 8.0),
-                                              Text(
-                                                'Konfirmasi',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
+                                          child: Text(
+                                            events.status == '1'
+                                                ? 'Angkut'
+                                                : 'Konfirmasi',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         )
                                       ],
@@ -643,7 +682,9 @@ class HomepageDriver extends StatelessWidget {
                                       ? 'Belum Disetujui Manajer'
                                       : events.status == '1'
                                           ? 'Belum Diangkut'
-                                          : 'Telah Diangkut',
+                                          : events.status == '2'
+                                              ? 'Sedang Diangkut'
+                                              : 'Telah Diantarkan',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -652,7 +693,9 @@ class HomepageDriver extends StatelessWidget {
                                         color: (events.status == '0' ||
                                                 events.status == '1')
                                             ? AppColors.error
-                                            : Colors.green,
+                                            : events.status == '2'
+                                                ? Colors.blue
+                                                : Colors.green,
                                       ),
                                 ),
                               ),
@@ -665,25 +708,4 @@ class HomepageDriver extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _buildEventsMarker(DateTime date, int eventCount) {
-  //   return Container(
-  //     width: 16.0, // Set the width
-  //     height: 16.0, // Set the height
-  //     decoration: const BoxDecoration(
-  //       color: Colors.blue, // Customize color based on your requirements
-  //       shape: BoxShape.circle, // Ensures the container is circular
-  //     ),
-  //     child: Center(
-  //       child: Text(
-  //         eventCount.toString(), // Display the event count
-  //         style: const TextStyle(
-  //           color: Colors.white, // Text color inside the circle
-  //           fontSize: 10.0, // Adjusted font size for better fit
-  //           fontWeight: FontWeight.bold, // Optional: make the text bold
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
