@@ -157,7 +157,10 @@ class HomepageDriver extends StatelessWidget {
               },
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, date, events) {
-                  if (events.isNotEmpty) {
+                  final driverEvents = events
+                      .where((event) => event.driver == storageUtil.getName())
+                      .toList();
+                  if (driverEvents.isNotEmpty) {
                     return Positioned(
                       right: 1,
                       bottom: 1,
@@ -174,7 +177,7 @@ class HomepageDriver extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            '${events.length}',
+                            '${driverEvents.length}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -210,7 +213,10 @@ class HomepageDriver extends StatelessWidget {
               : ListView.builder(
                   itemCount: controller.selectedEvents
                       .where((event) =>
-                          event.status != '3') // Filter event dengan status 3
+                          event.status != '3' &&
+                          event.driver ==
+                              storageUtil
+                                  .getName()) // Filter event dengan status 3
                       .length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

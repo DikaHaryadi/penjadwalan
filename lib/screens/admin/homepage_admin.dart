@@ -180,6 +180,15 @@ class HomepageAdmin extends StatelessWidget {
                               ),
                             ],
                           ),
+                          Row(children: [
+                            Text('Penanggung Jawab:',
+                                style: Theme.of(context).textTheme.bodyMedium),
+                            Text(' ${jadwal.jumlahLimbah}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold)),
+                          ]),
                           const SizedBox(height: 8.0),
                           Align(
                             alignment: Alignment.centerRight,
@@ -314,6 +323,15 @@ class ListItems extends StatelessWidget {
               height: 50,
               color: AppColors.white,
               child: Center(child: Text('Master Kategori')),
+            ),
+          ),
+          const Divider(),
+          GestureDetector(
+            onTap: () => Get.toNamed('/master-barang'),
+            child: Container(
+              height: 50,
+              color: AppColors.white,
+              child: const Center(child: Text('Master Barang')),
             ),
           ),
           const Divider(),

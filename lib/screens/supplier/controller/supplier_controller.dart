@@ -11,9 +11,13 @@ class SupplierController extends GetxController {
   final localStorage = StorageUtil();
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final formKey = GlobalKey<FormState>();
-
+  var isJumlahLimbahReadOnly = true.obs;
   RxList<JadwalMasuk> userList = <JadwalMasuk>[].obs;
   RxList<KategoriBarangModel> kategoriBarang = <KategoriBarangModel>[].obs;
+
+  RxList<JadwalMasuk> memintaPersetujuanList = <JadwalMasuk>[].obs;
+  RxList<JadwalMasuk> pendingList = <JadwalMasuk>[].obs;
+  RxList<JadwalMasuk> finishList = <JadwalMasuk>[].obs;
 
   final namaPerusahaanC = TextEditingController();
   final nomorTelponC = TextEditingController();
@@ -21,6 +25,7 @@ class SupplierController extends GetxController {
   final jumlahLimbah = TextEditingController();
   final hargaC = TextEditingController();
   final alamatC = TextEditingController();
+  final penanggungJawabC = TextEditingController();
 
   var selectedJenisLimbah = ''.obs;
   var hargaPerSatuan = 0.0.obs;
@@ -56,11 +61,26 @@ class SupplierController extends GetxController {
       satuanLimbah.value = selectedLimbah.satuanLimbah;
       selectedJenisLimbah.value = jenisLimbah;
 
+      isJumlahLimbahReadOnly.value = false;
+
       updateTotalHarga();
     } catch (e) {
       hargaPerSatuan.value = 0.0;
       satuanLimbah.value = '';
-      hargaC.text = ''; // Reset harga jika terjadi error
+      hargaC.text = '';
+      isJumlahLimbahReadOnly.value = true;
+    }
+  }
+
+  Future<List<JadwalMasuk>> getJadwalByStatus(String status) async {
+    try {
+      await Future.delayed(
+          const Duration(seconds: 1)); // Simulate network delay
+      return userList
+          .where((event) => event.status == status.toString())
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch events: $e');
     }
   }
 
@@ -93,8 +113,7 @@ class SupplierController extends GetxController {
 
   Future<void> fetchPengangkutan() async {
     try {
-      String loggedInUser =
-          localStorage.getName(); // Ambil nama user yang login
+      String loggedInUser = localStorage.getName();
       String typeUser = localStorage.getRoles();
       QuerySnapshot<Map<String, dynamic>> snapshot;
 
@@ -107,15 +126,18 @@ class SupplierController extends GetxController {
             .get();
       }
 
-      // Konversi setiap dokumen ke dalam UserModel
       final users =
           snapshot.docs.map((doc) => JadwalMasuk.fromSnapshot(doc)).toList();
       userList.value = users;
+
+      // Bagi berdasarkan status
+      memintaPersetujuanList.value =
+          users.where((e) => e.status == '0').toList();
+      pendingList.value = users.where((e) => e.status == '1').toList();
+      finishList.value = users.where((e) => e.status == '2').toList();
     } catch (e) {
       SnackbarLoader.errorSnackBar(
-        title: 'Error',
-        message: 'Gagal mengambil data: $e',
-      );
+          title: 'Error', message: 'Gagal mengambil data: $e');
       print('ini err : ${e.toString()}');
     }
   }
@@ -146,6 +168,7 @@ class SupplierController extends GetxController {
           jenisLimbah: jenisLimbahC.text.trim(),
           jumlahLimbah: jumlahLimbah.text.trim(),
           alamat: alamatC.text.trim(),
+          penanggungJawab: penanggungJawabC.text.trim(),
           harga: hargaC.text.trim(),
           status: '0');
 
@@ -277,5 +300,7 @@ class SupplierController extends GetxController {
   void resetEditState() {
     jenisLimbahC.clear();
     jumlahLimbah.clear();
+    penanggungJawabC.clear();
+    selectedJenisLimbah.value = '';
   }
 }

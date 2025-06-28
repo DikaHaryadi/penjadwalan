@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/screens/supplier/controller/supplier_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:popover/popover.dart';
 
 import '../../constant/custom_size.dart';
@@ -16,6 +15,7 @@ class HomeSupplier extends StatelessWidget {
   Widget build(BuildContext context) {
     final storageUtil = StorageUtil();
     final controller = Get.put(SupplierController());
+    final selectedTabLogin = ValueNotifier(_Tab.memintaPersetujuan);
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
@@ -67,145 +67,392 @@ class HomeSupplier extends StatelessWidget {
               ),
             ),
             Divider(),
-            Obx(() {
-              if (controller.userList.isEmpty) {
-                return const Center(
-                  child: Text('Tidak ada data'),
-                );
-              }
-
-              return ListView.builder(
-                itemCount: controller.userList.length,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final jadwal = controller.userList[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 5.0),
-                    elevation: 4.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+            Center(
+              child: Text(
+                "Data Pengajuan Pengangkutan",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              child: ValueListenableBuilder<_Tab>(
+                valueListenable: selectedTabLogin,
+                builder: (context, value, child) {
+                  return Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.zero,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(child: Container()),
-                              Text(
-                                jadwal.namaPerusahaan,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              Expanded(child: Container()),
-                              GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text('Konfirmasi Penghapusan'),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                  'Apakah anda yakin untuk menghapus ini?')
-                                            ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(
-                                                          Get.overlayContext!)
-                                                      .pop();
-                                                },
-                                                child: Text('Batalkan')),
-                                            TextButton(
-                                                onPressed: () {
-                                                  controller
-                                                      .deleteJadwal(jadwal.id!);
-                                                },
-                                                child: Text('Hapus')),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                  child: Icon(
-                                    Iconsax.trash,
-                                    color: Colors.red,
-                                  )),
-                              // GestureDetector(
-                              //     onTap: () {
-                              //       Get.to(
-                              //           () => EditPengangkutan(model: jadwal));
-                              //     },
-                              //     child: Icon(
-                              //       Iconsax.edit,
-                              //       color: Colors.grey,
-                              //     )),
-                            ],
-                          ),
-                          const Divider(),
-                          Text('Alamat :',
-                              style: Theme.of(context).textTheme.labelMedium),
-                          Text(
-                            jadwal.alamat,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Colors.green),
-                          ),
-                          const SizedBox(height: 6),
-                          Text('Jenis Limbah: ${jadwal.jenisLimbah}',
-                              style: Theme.of(context).textTheme.bodyMedium),
-                          Text('Jumlah Limbah: ${jadwal.jumlahLimbah}',
-                              style: Theme.of(context).textTheme.bodyMedium),
-                          const SizedBox(height: 8),
-                          Text(jadwal.harga,
-                              style: Theme.of(context).textTheme.bodyLarge),
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerRight,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              selectedTabLogin.value = _Tab.memintaPersetujuan;
+                            },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color: jadwal.status == '0'
-                                    ? Colors.orange.withOpacity(0.1)
-                                    : Colors.green.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
+                                color: value == _Tab.memintaPersetujuan
+                                    ? Colors.green
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.zero,
                               ),
+                              alignment: Alignment.center,
                               child: Text(
-                                jadwal.status == '0'
-                                    ? 'Meminta Persetujuan'
-                                    : (jadwal.status == '1'
-                                        ? 'Ditolak'
-                                        : 'Diterima'),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: jadwal.status == '0'
-                                          ? Colors.orange
-                                          : Colors.green,
-                                    ),
+                                "Meminta Persetujuan",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: value == _Tab.memintaPersetujuan
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              selectedTabLogin.value = _Tab.pending;
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: value == _Tab.pending
+                                    ? Colors.green
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.zero,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Ditolak",
+                                style: TextStyle(
+                                  color: value == _Tab.pending
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              selectedTabLogin.value = _Tab.finish;
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: value == _Tab.finish
+                                    ? Colors.green
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.zero,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Selesai",
+                                style: TextStyle(
+                                  color: value == _Tab.finish
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },
-              );
-            })
+              ),
+            ),
+            // Use ValueListenableBuilder to listen to changes in selectedTabLogin
+            ValueListenableBuilder<_Tab>(
+              valueListenable: selectedTabLogin,
+              builder: (context, value, child) {
+                // Pilih list berdasarkan tab
+                final list = value == _Tab.memintaPersetujuan
+                    ? controller.memintaPersetujuanList
+                    : value == _Tab.pending
+                        ? controller.pendingList
+                        : controller.finishList;
+
+                return Obx(() {
+                  if (list.isEmpty) {
+                    return const Center(child: Text('No data available'));
+                  }
+
+                  return ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      final jadwal = list[index];
+                      return GestureDetector(
+                        onTap: () {
+                          if (jadwal.status == '0') {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  elevation: 5.0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Konfirmasi Penyetujuan Limbah',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.apply(
+                                                fontWeightDelta: 2,
+                                                color: Colors.black,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 16.0),
+                                        Text(
+                                          jadwal.namaPerusahaan,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.apply(
+                                                fontWeightDelta: 2,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Text(
+                                          jadwal.alamat,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        ),
+                                        const SizedBox(height: 12.0),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RichText(
+                                              text: TextSpan(
+                                                text: 'Jenis Limbah',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.apply(
+                                                      fontWeightDelta: 1,
+                                                      color: Colors.black87,
+                                                    ),
+                                                children: [
+                                                  const TextSpan(text: ' | '),
+                                                  TextSpan(
+                                                    text: jadwal.jumlahLimbah,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Text(
+                                              jadwal.jumlahLimbah,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.apply(
+                                                    color: AppColors.error,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12.0),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RichText(
+                                              text: TextSpan(
+                                                text: 'Jumlah Limbah',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.apply(
+                                                      fontWeightDelta: 1,
+                                                      color: Colors.black87,
+                                                    ),
+                                                children: [
+                                                  const TextSpan(text: ' | '),
+                                                  TextSpan(
+                                                    text: jadwal.jumlahLimbah,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Text(
+                                              jadwal.jumlahLimbah,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.apply(
+                                                    color: AppColors.error,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12.0),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            jadwal.status == '0'
+                                                ? 'Meminta Persetujuan'
+                                                : jadwal.status == '1'
+                                                    ? 'Ditolak'
+                                                    : 'Selesai',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: jadwal.status == '0'
+                                                      ? AppColors.error
+                                                      : Colors.green,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                          elevation: 4.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  jadwal.namaPerusahaan,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  jadwal.alamat,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                        text: 'Jumlah Limbah',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                        children: [
+                                          const TextSpan(text: ' | '),
+                                          TextSpan(
+                                            text: jadwal.jumlahLimbah,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      jadwal.jenisLimbah,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.apply(
+                                            color: AppColors.error,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Telp :',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                    Text(
+                                      jadwal.noTelp,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.apply(
+                                            color: AppColors.darkGrey,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8.0),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    jadwal.status == '0'
+                                        ? 'Meminta Persetujuan'
+                                        : jadwal.status == '1'
+                                            ? 'Ditolak'
+                                            : 'Selesai',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: jadwal.status == '0'
+                                              ? AppColors.error
+                                              : Colors.green,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (_, __) => const SizedBox(height: 12.0),
+                  );
+                });
+              },
+            ),
           ],
         )),
       ),
@@ -301,3 +548,5 @@ class ListItems extends StatelessWidget {
     );
   }
 }
+
+enum _Tab { memintaPersetujuan, pending, finish }

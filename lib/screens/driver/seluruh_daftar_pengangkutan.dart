@@ -4,15 +4,15 @@ import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../constant/custom_size.dart';
-import '../../controllers/calendar_controller.dart';
 import '../../theme/app_colors.dart';
+import 'seluruh_daftar_pengangkutan_controller.dart';
 
 class SeluruhDaftarPengangkutan extends StatelessWidget {
   const SeluruhDaftarPengangkutan({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<TableEventsController>();
+    final controller = Get.put(SeluruhDaftarPengangkutanController());
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

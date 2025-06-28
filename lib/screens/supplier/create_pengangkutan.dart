@@ -15,20 +15,6 @@ class CreatePengangkutan extends StatelessWidget {
           'Pengangkutan Limbah',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: ElevatedButton.icon(
-              onPressed: controller.createJadwal,
-              icon: Icon(Icons.add),
-              label: Text('Tambah'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -41,6 +27,7 @@ class CreatePengangkutan extends StatelessWidget {
                 'Nama Perusahaan',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
+              SizedBox(height: 5.0),
               TextFormField(
                 controller: controller.namaPerusahaanC,
                 readOnly: true,
@@ -58,10 +45,12 @@ class CreatePengangkutan extends StatelessWidget {
                   return null;
                 },
               ),
+              SizedBox(height: 8.0),
               Text(
                 'Nomor telpon',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
+              SizedBox(height: 5.0),
               TextFormField(
                 controller: controller.nomorTelponC,
                 readOnly: true,
@@ -79,10 +68,12 @@ class CreatePengangkutan extends StatelessWidget {
                   return null;
                 },
               ),
+              SizedBox(height: 8.0),
               Text(
                 'Jenis Limbah',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
+              SizedBox(height: 5.0),
               Obx(() {
                 return DropdownButtonFormField<String>(
                   value: controller.selectedJenisLimbah.value.isNotEmpty
@@ -104,21 +95,27 @@ class CreatePengangkutan extends StatelessWidget {
                   },
                 );
               }),
-              _buildTextField(
-                label: 'Jumlah Limbah',
-                controller: controller.jumlahLimbah,
-                validatorMsg: 'Jumlah Limbah is required',
-                onChanged: (value) {
-                  if (value.isNotEmpty) {
-                    controller
-                        .updateHarga(controller.selectedJenisLimbah.value);
-                  }
-                },
+              SizedBox(height: 8.0),
+              Obx(
+                () => _buildTextField(
+                  label: 'Jumlah Limbah',
+                  controller: controller.jumlahLimbah,
+                  validatorMsg: 'Jumlah Limbah is required',
+                  readOnly: controller.isJumlahLimbahReadOnly.value,
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      controller
+                          .updateHarga(controller.selectedJenisLimbah.value);
+                    }
+                  },
+                ),
               ),
+              SizedBox(height: 8.0),
               Text(
                 'Harga Limbah',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
+              SizedBox(height: 5.0),
               TextFormField(
                 controller: controller.hargaC,
                 readOnly: true,
@@ -132,10 +129,12 @@ class CreatePengangkutan extends StatelessWidget {
                   ),
                 ),
               ),
+              SizedBox(height: 8.0),
               Text(
                 'Alamat',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
+              SizedBox(height: 5.0),
               TextFormField(
                 controller: controller.alamatC,
                 readOnly: true,
@@ -154,6 +153,33 @@ class CreatePengangkutan extends StatelessWidget {
                   return null;
                 },
               ),
+              SizedBox(height: 8.0),
+              Text(
+                'Penanggung Jawab',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
+              SizedBox(height: 5.0),
+              TextFormField(
+                controller: controller.penanggungJawabC,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Penanggung Jawab is required';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                  onPressed: controller.createJadwal,
+                  child: Center(child: Text('Kirim')))
             ],
           ),
         ),
@@ -165,40 +191,39 @@ class CreatePengangkutan extends StatelessWidget {
     required String label,
     required TextEditingController controller,
     required String validatorMsg,
+    required bool readOnly,
     int maxLines = 1,
     void Function(String)? onChanged, // Tambahkan onChanged di sini
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-          ),
-          const SizedBox(height: 4.0),
-          TextFormField(
-            controller: controller,
-            keyboardType: TextInputType.text,
-            maxLines: maxLines,
-            decoration: InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+        ),
+        const SizedBox(height: 4.0),
+        TextFormField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          maxLines: maxLines,
+          readOnly: readOnly,
+          decoration: InputDecoration(
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return validatorMsg;
-              }
-              return null;
-            },
-            onChanged: onChanged, // Gunakan onChanged di sini
           ),
-        ],
-      ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return validatorMsg;
+            }
+            return null;
+          },
+          onChanged: onChanged, // Gunakan onChanged di sini
+        ),
+      ],
     );
   }
 }

@@ -97,8 +97,19 @@ class _HomepageManajerState extends State<HomepageManajer> {
                   icon: const Icon(Iconsax.card))
             ],
           ),
+          const Divider(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+            padding: const EdgeInsets.fromLTRB(16, 20, 0, 10),
+            child: Text(
+              "Data Persetujuan",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
             child: ValueListenableBuilder<_Tab>(
               valueListenable: selectedTabLogin,
               builder: (context, value, child) {
@@ -174,7 +185,6 @@ class _HomepageManajerState extends State<HomepageManajer> {
               },
             ),
           ),
-
           // Use ValueListenableBuilder to listen to changes in selectedTabLogin
           ValueListenableBuilder<_Tab>(
             valueListenable: selectedTabLogin,

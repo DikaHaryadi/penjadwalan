@@ -87,6 +87,16 @@ class JadwalMasukView extends StatelessWidget {
                       'Harga: ${jadwal.harga}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
+                    const SizedBox(height: 4),
+                    Row(children: [
+                      Text('Penanggung Jawab:',
+                          style: Theme.of(context).textTheme.bodyMedium),
+                      Text(' ${jadwal.penanggungJawab}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.bold)),
+                    ]),
                     const SizedBox(height: 16.0),
                     if (jadwal.status == '0')
                       Row(

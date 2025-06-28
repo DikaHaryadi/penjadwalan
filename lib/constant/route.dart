@@ -3,6 +3,7 @@ import 'package:example/splash_screen.dart';
 import 'package:get/get.dart';
 
 import '../screens/admin/add_user.dart';
+import '../screens/admin/master_barang.dart';
 import '../screens/admin/rootpage_admin.dart';
 import '../screens/driver/rootpage_driver.dart';
 import '../screens/manajer/rootpage_manajer.dart';
@@ -37,6 +38,10 @@ class AppRoutes {
         GetPage(
           name: '/add-jadwal-masuk',
           page: () => const CreatePengangkutan(),
-        )
+        ),
+        GetPage(
+          name: '/master-barang',
+          page: () => const MasterBarang(),
+        ),
       ];
 }

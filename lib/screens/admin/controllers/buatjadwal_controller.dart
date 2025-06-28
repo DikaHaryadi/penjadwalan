@@ -8,6 +8,7 @@ import '../../../utils/loader/snackbar.dart';
 class BuatjadwalController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   RxList<Event> userList = <Event>[].obs;
+  RxBool isLoading = false.obs;
 
   // dropdown nama perusahaan
   var dropdownItems = <String>[].obs;
@@ -33,6 +34,8 @@ class BuatjadwalController extends GetxController {
   }
 
   Future<void> fetchJadwal() async {
+    isLoading.value = true;
+
     try {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await _db.collection('BuatJadwal').get();
@@ -47,6 +50,8 @@ class BuatjadwalController extends GetxController {
         message: 'Gagal mengambil data: $e',
       );
       print('ini err : ${e.toString()}');
+    } finally {
+      isLoading.value = false;
     }
   }
 

@@ -8,6 +8,7 @@ class JadwalMasuk {
   String jumlahLimbah;
   String harga;
   String alamat;
+  String penanggungJawab;
   String status;
 
   JadwalMasuk({
@@ -18,6 +19,7 @@ class JadwalMasuk {
     required this.jumlahLimbah,
     required this.harga,
     required this.alamat,
+    required this.penanggungJawab,
     required this.status,
   });
 
@@ -28,6 +30,7 @@ class JadwalMasuk {
         jumlahLimbah: '',
         harga: '',
         alamat: '',
+        penanggungJawab: '',
         status: '',
       );
 
@@ -42,6 +45,7 @@ class JadwalMasuk {
       jumlahLimbah: data['Jumlah_Limbah'] ?? '',
       harga: data['Harga'] ?? '',
       alamat: data['Alamat'] ?? '',
+      penanggungJawab: data['Penanggung_Jawab'] ?? '',
       status: data['Status'] ?? '',
     );
   }
@@ -54,6 +58,7 @@ class JadwalMasuk {
       'Jumlah_Limbah': jumlahLimbah,
       'Harga': harga,
       'Alamat': alamat,
+      'Penanggung_Jawab': penanggungJawab,
       'Status': status,
     };
   }
