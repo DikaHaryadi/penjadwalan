@@ -137,7 +137,8 @@ class SupplierController extends GetxController {
       memintaPersetujuanList.value =
           users.where((e) => e.status == '0').toList();
       pendingList.value = users.where((e) => e.status == '1').toList();
-      finishList.value = users.where((e) => e.status == '2').toList();
+      finishList.value =
+          users.where((e) => e.status == '2' || e.status == '3').toList();
     } catch (e) {
       SnackbarLoader.errorSnackBar(
           title: 'Error', message: 'Gagal mengambil data: $e');

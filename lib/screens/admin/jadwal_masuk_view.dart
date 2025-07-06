@@ -207,6 +207,16 @@ class JadwalMasukView extends StatelessWidget {
                                 ?.copyWith(color: Colors.green, fontSize: 16),
                           ),
                         ),
+                      if (jadwal.status == '3')
+                        Center(
+                          child: Text(
+                            'Sudah Masuk Daftar Jadwal',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(color: Colors.green, fontSize: 16),
+                          ),
+                        ),
                     ],
                   ),
                 ),

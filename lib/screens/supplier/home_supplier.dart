@@ -247,78 +247,70 @@ class HomeSupplier extends StatelessWidget {
                                               .bodyMedium,
                                         ),
                                         const SizedBox(height: 12.0),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            RichText(
-                                              text: TextSpan(
-                                                text: 'Jenis Limbah',
+                                        RichText(
+                                          text: TextSpan(
+                                            text: 'Jenis Limbah',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.apply(
+                                                  fontWeightDelta: 1,
+                                                  color: Colors.black87,
+                                                ),
+                                            children: [
+                                              const TextSpan(text: ' | '),
+                                              TextSpan(
+                                                text: jadwal.jenisLimbah,
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .bodyMedium
-                                                    ?.apply(
-                                                      fontWeightDelta: 1,
-                                                      color: Colors.black87,
-                                                    ),
-                                                children: [
-                                                  const TextSpan(text: ' | '),
-                                                  TextSpan(
-                                                    text: jadwal.jumlahLimbah,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyMedium,
-                                                  ),
-                                                ],
+                                                    .bodyMedium,
                                               ),
-                                            ),
-                                            Text(
-                                              jadwal.jumlahLimbah,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.apply(
-                                                    color: AppColors.error,
-                                                  ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                        const SizedBox(height: 12.0),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            RichText(
-                                              text: TextSpan(
-                                                text: 'Jumlah Limbah',
+                                        const SizedBox(height: 6.0),
+                                        RichText(
+                                          text: TextSpan(
+                                            text: 'Jumlah Limbah',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.apply(
+                                                  fontWeightDelta: 1,
+                                                  color: Colors.black87,
+                                                ),
+                                            children: [
+                                              const TextSpan(text: ' | '),
+                                              TextSpan(
+                                                text: jadwal.jumlahLimbah,
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .bodyMedium
-                                                    ?.apply(
-                                                      fontWeightDelta: 1,
-                                                      color: Colors.black87,
-                                                    ),
-                                                children: [
-                                                  const TextSpan(text: ' | '),
-                                                  TextSpan(
-                                                    text: jadwal.jumlahLimbah,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyMedium,
-                                                  ),
-                                                ],
+                                                    .bodyMedium,
                                               ),
-                                            ),
-                                            Text(
-                                              jadwal.jumlahLimbah,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.apply(
-                                                    color: AppColors.error,
-                                                  ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6.0),
+                                        RichText(
+                                          text: TextSpan(
+                                            text: 'Penanggung Jawab',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.apply(
+                                                  fontWeightDelta: 1,
+                                                  color: Colors.black87,
+                                                ),
+                                            children: [
+                                              const TextSpan(text: ' | '),
+                                              TextSpan(
+                                                text: jadwal.penanggungJawab,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                         const SizedBox(height: 12.0),
                                         Align(
@@ -370,40 +362,26 @@ class HomeSupplier extends StatelessWidget {
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        text: 'Penanggung Jawab',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall,
-                                        children: [
-                                          const TextSpan(text: ' | '),
-                                          TextSpan(
-                                            text: jadwal.jumlahLimbah,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                          ),
-                                        ],
-                                      ),
+                                    Text(
+                                      'Penanggung Jawab :',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
                                     ),
+                                    Text(' '),
                                     Text(
                                       jadwal.penanggungJawab,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium
                                           ?.apply(
-                                            color: AppColors.error,
+                                            color: AppColors.darkGrey,
                                           ),
                                     ),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       'Telp :',
@@ -411,6 +389,7 @@ class HomeSupplier extends StatelessWidget {
                                           .textTheme
                                           .bodyMedium,
                                     ),
+                                    Text(' '),
                                     Text(
                                       jadwal.noTelp,
                                       style: Theme.of(context)
@@ -436,7 +415,8 @@ class HomeSupplier extends StatelessWidget {
                                         .bodyMedium
                                         ?.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: jadwal.status == '0'
+                                          color: jadwal.status == '0' ||
+                                                  jadwal.status == '1'
                                               ? AppColors.error
                                               : Colors.green,
                                         ),

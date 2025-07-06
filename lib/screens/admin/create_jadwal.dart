@@ -112,7 +112,10 @@ class CreateJadwal extends StatelessWidget {
 
                         final selectedData =
                             supplierController.userList.firstWhere(
-                          (e) => e.namaPerusahaan == newValue,
+                          (e) =>
+                              e.namaPerusahaan == newValue &&
+                              e.status ==
+                                  "2", // Pastikan hanya ambil yang status-nya 2
                           orElse: () => JadwalMasuk.empty(),
                         );
 

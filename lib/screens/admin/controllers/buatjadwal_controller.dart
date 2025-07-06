@@ -58,9 +58,11 @@ class BuatjadwalController extends GetxController {
 
   Future<void> fetchFilteredJadwalMasuk() async {
     try {
-      // Ambil semua data dari JadwalMasuk
-      QuerySnapshot jadwalMasukSnapshot =
-          await _db.collection('JadwalMasuk').get();
+      // Ambil hanya data JadwalMasuk dengan Status == "2"
+      QuerySnapshot jadwalMasukSnapshot = await _db
+          .collection('JadwalMasuk')
+          .where('Status', isEqualTo: '2')
+          .get();
       List<Map<String, dynamic>> jadwalMasukList = jadwalMasukSnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
@@ -81,14 +83,11 @@ class BuatjadwalController extends GetxController {
                 buatJadwal['Jumlah_Limbah'] == jadwalMasuk['Jumlah_Limbah']);
           })
           .map((e) => e['Nama_Usaha'].toString())
-          .where((nama) => nama.isNotEmpty) // Hindari nilai kosong
-          .toSet() // Hilangkan duplikasi
+          .where((nama) => nama.isNotEmpty)
+          .toSet()
           .toList();
 
-      // Update dropdownItems
       dropdownItems.assignAll(filteredNamaUsaha);
-
-      // Reset nilai dropdown agar tidak otomatis memilih yang pertama
       selectedValue.value = null;
     } catch (e) {
       print("Error fetching data: $e");
@@ -153,6 +152,21 @@ class BuatjadwalController extends GetxController {
 
       // Simpan berita baru ke Firestore
       await saveBeritaNew(newBerita);
+      // Update status pada collection JadwalMasuk menjadi '3'
+      await FirebaseFirestore.instance
+          .collection('JadwalMasuk')
+          .where('Nama_Usaha', isEqualTo: newBerita.namaUsaha)
+          .get()
+          .then((snapshot) async {
+        if (snapshot.docs.isNotEmpty) {
+          final docId = snapshot.docs.first.id;
+          await FirebaseFirestore.instance
+              .collection('JadwalMasuk')
+              .doc(docId)
+              .update({'Status': '3'});
+        }
+      });
+
       resetEditState();
       await fetchJadwal();
       await fetchFilteredJadwalMasuk();
