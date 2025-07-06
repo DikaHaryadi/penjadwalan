@@ -161,6 +161,20 @@ class SeluruhDaftarPengangkutan extends StatelessWidget {
                       Text(events.platNomer),
                     ],
                   ),
+                  const SizedBox(height: CustomSize.sm),
+                  Row(
+                    children: [
+                      Text(
+                        'Penanggung Jawab',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                      const SizedBox(width: CustomSize.sm),
+                      Text(events.penanggungJawab),
+                    ],
+                  ),
                   const SizedBox(height: CustomSize.md),
                   Align(
                     alignment: Alignment.centerRight,

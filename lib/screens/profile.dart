@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
       child: RefreshIndicator(
           onRefresh: () async {
             storageUtil.getRoles() == '0'
-                ? await tableController.getEventsByStatus('2')
+                ? await tableController.getEventsByStatus(['2', '3'])
                 : null;
           },
           child: ListView(
@@ -148,7 +148,8 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: CustomSize.spaceBtwItems),
                               FutureBuilder<List<Event>>(
-                                future: tableController.getEventsByStatus('2'),
+                                future: tableController
+                                    .getEventsByStatus(['2', '3']),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -300,6 +301,42 @@ class ProfileScreen extends StatelessWidget {
                                                   ),
                                                 ],
                                               ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      text: 'Penanggung Jawab',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .titleMedium,
+                                                      children: [
+                                                        const TextSpan(
+                                                            text: ' | '),
+                                                        TextSpan(
+                                                          text: jadwal
+                                                              .penanggungJawab,
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyMedium,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    jadwal.jenisLimbah,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.apply(
+                                                            color: AppColors
+                                                                .error),
+                                                  ),
+                                                ],
+                                              ),
                                               const SizedBox(
                                                   height: CustomSize.sm),
                                               Align(
@@ -428,6 +465,8 @@ class ProfileScreen extends StatelessWidget {
                   'Jumlah', event.jumlahLimbah, ttfBold, ttfRegular),
               _buildAlignedText(
                   'Tanggal', _formatDate(event.date), ttfBold, ttfRegular),
+              _buildAlignedText('Penanggung Jawab', event.penanggungJawab,
+                  ttfBold, ttfRegular),
               pw.SizedBox(height: 20),
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,

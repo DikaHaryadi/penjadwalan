@@ -23,7 +23,7 @@ class SeluruhDaftarPengangkutanController extends GetxController {
     try {
       final QuerySnapshot<Map<String, dynamic>> snapshot = await _db
           .collection('BuatJadwal')
-          .where('Status', isEqualTo: '1')
+          .where('Status', isEqualTo: '3')
           .get();
 
       final users = snapshot.docs

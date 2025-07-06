@@ -13,6 +13,7 @@ class Event {
   final DateTime? date;
   String telp;
   String waktu;
+  String penanggungJawab;
   Timestamp? createdAt;
 
   Event({
@@ -28,6 +29,7 @@ class Event {
     required this.date,
     required this.telp,
     required this.waktu,
+    required this.penanggungJawab,
     this.createdAt,
   });
 
@@ -47,6 +49,7 @@ class Event {
       date: timestamp?.toDate(),
       telp: data['Telp'] ?? '',
       waktu: data['Waktu'] ?? '',
+      penanggungJawab: data['Penanggung_Jawab'] ?? '',
     );
   }
 
@@ -62,7 +65,8 @@ class Event {
       'Status': status,
       'Tanggal': date != null ? Timestamp.fromDate(date!) : null,
       'Telp': telp,
-      'Waktu': waktu
+      'Waktu': waktu,
+      'Penanggung_Jawab': penanggungJawab,
     };
   }
 
@@ -79,6 +83,7 @@ class Event {
       'Tanggal': date != null ? Timestamp.fromDate(date!) : null,
       'Telp': telp,
       'Waktu': waktu,
+      'Penanggung_Jawab': penanggungJawab,
       'createdAt': createdAt,
     };
   }
@@ -100,6 +105,7 @@ class Event {
       date: timestamp?.toDate(), // Konversi Timestamp ke DateTime
       telp: data['Telp'] ?? '',
       waktu: data['Waktu'] ?? '',
+      penanggungJawab: data['Penanggung_Jawab'],
       createdAt: data['createdAt'],
     );
   }
@@ -125,6 +131,7 @@ class SeluruhDaftarPengangkutanModel {
   String jumlahLimbah;
   String namaUsaha;
   String platNomer;
+  String penanggungJawab;
   String status;
   final DateTime? date;
   String telp;
@@ -139,6 +146,7 @@ class SeluruhDaftarPengangkutanModel {
     required this.jumlahLimbah,
     required this.namaUsaha,
     required this.platNomer,
+    required this.penanggungJawab,
     required this.status,
     required this.date,
     required this.telp,
@@ -159,6 +167,7 @@ class SeluruhDaftarPengangkutanModel {
       jumlahLimbah: data['Jumlah_Limbah'] ?? '',
       namaUsaha: data['Nama_Usaha'] ?? '',
       platNomer: data['Plat_Nomer'] ?? '',
+      penanggungJawab: data['Penanggung_Jawab'] ?? '',
       status: data['Status'] ?? '',
       date: timestamp?.toDate(), // Konversi Timestamp ke DateTime
       telp: data['Telp'] ?? '',

@@ -183,7 +183,7 @@ class HomepageAdmin extends StatelessWidget {
                           Row(children: [
                             Text('Penanggung Jawab:',
                                 style: Theme.of(context).textTheme.bodyMedium),
-                            Text(' ${jadwal.jumlahLimbah}',
+                            Text(' ${jadwal.penanggungJawab}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
@@ -195,7 +195,13 @@ class HomepageAdmin extends StatelessWidget {
                             child: Text(
                               jadwal.status == '0'
                                   ? 'Meminta Persetujuan'
-                                  : 'Sudah Disetujui',
+                                  : jadwal.status == '1'
+                                      ? 'Sudah Disetujui Manajer'
+                                      : jadwal.status == '2'
+                                          ? 'Sedang Diangkut'
+                                          : jadwal.status == '3'
+                                              ? 'Selesai Diantar'
+                                              : 'Status Tidak Dikenal',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -206,7 +212,7 @@ class HomepageAdmin extends StatelessWidget {
                                         : Colors.green,
                                   ),
                             ),
-                          ),
+                          )
                         ],
                       ),
                     ),

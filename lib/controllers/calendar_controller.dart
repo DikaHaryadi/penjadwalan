@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../constant/storage_util.dart';
+
 class TableEventsController extends GetxController {
   RxBool isLoading = false.obs;
   final CalendarRepository _calendarRepository = CalendarRepository();
@@ -24,12 +26,49 @@ class TableEventsController extends GetxController {
     super.onInit();
     _calendarRepository.getEvents().listen((eventList) {
       events.value = eventList;
+// Ambil nama driver
+      final driverName = StorageUtil().getName();
+
+// Filter hanya event milik driver dan status != '3'
+      final filteredDriverEvents = eventList
+          .where((e) => e.driver == driverName && e.status != '3')
+          .toList();
+
+// Cari event yang sesuai dengan hari ini, kalau tidak ada ambil yang pertama
+      final firstEventToday = filteredDriverEvents.firstWhere(
+        (e) => isSameDay(e.date, DateTime.now()),
+        orElse: () => filteredDriverEvents.isNotEmpty
+            ? filteredDriverEvents.first
+            : Event(
+                alamat: '',
+                driver: '',
+                harga: '',
+                jenisLimbah: '',
+                jumlahLimbah: '',
+                namaUsaha: '',
+                platNomer: '',
+                status: '',
+                date: DateTime.now(),
+                telp: '',
+                waktu: '',
+                penanggungJawab: '',
+              ),
+      );
+
+// Update selected dan focused day
+      selectedDay.value = firstEventToday.date!;
+      focusedDay.value = firstEventToday.date!;
       selectedEvents.value = getEventsForDay(selectedDay.value!);
     });
   }
 
   List<Event> getEventsForDay(DateTime day) {
-    return events.where((event) => isSameDay(event.date, day)).toList();
+    final name = StorageUtil().getName();
+    return events.where((event) {
+      return isSameDay(event.date, day) &&
+          event.driver == name &&
+          event.status != '3'; // hanya status != 3
+    }).toList();
   }
 
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
@@ -67,13 +106,11 @@ class TableEventsController extends GetxController {
     }
   }
 
-  Future<List<Event>> getEventsByStatus(String status) async {
+  Future<List<Event>> getEventsByStatus(List<String> statuses) async {
     try {
-      await Future.delayed(
-          const Duration(seconds: 1)); // Simulate network delay
-      return events
-          .where((event) => event.status == status.toString())
-          .toList();
+      await Future.delayed(const Duration(seconds: 1)); // Simulasi delay
+
+      return events.where((event) => statuses.contains(event.status)).toList();
     } catch (e) {
       throw Exception('Failed to fetch events: $e');
     }

@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:example/models/jadwal_masuk.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -87,7 +88,9 @@ class CreateJadwal extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
             children: [
               Text('Nama usaha'),
-              Obx(() => DropdownButtonFormField<String>(
+              Obx(() => DropdownButtonFormField2<String>(
+                    key: ValueKey(controller.dropdownItems.length),
+                    isExpanded: true,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -95,9 +98,8 @@ class CreateJadwal extends StatelessWidget {
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
-                    value: controller.selectedValue.value, // Tidak ada default
-                    hint: Text(
-                        "Pilih usaha"), // Tambahkan hint untuk tampilan awal
+                    value: controller.selectedValue.value,
+                    hint: Text("Pilih usaha"),
                     items: controller.dropdownItems
                         .map((item) => DropdownMenuItem<String>(
                               value: item,
@@ -106,13 +108,13 @@ class CreateJadwal extends StatelessWidget {
                         .toList(),
                     onChanged: (newValue) {
                       if (newValue != null) {
-                        controller.selectedValue.value =
-                            newValue; // Simpan nilai yang dipilih
+                        controller.selectedValue.value = newValue;
 
-                        // Cari data berdasarkan Nama_Usaha yang dipilih
-                        final selectedData = supplierController.userList
-                            .firstWhere((e) => e.namaPerusahaan == newValue,
-                                orElse: () => JadwalMasuk.empty());
+                        final selectedData =
+                            supplierController.userList.firstWhere(
+                          (e) => e.namaPerusahaan == newValue,
+                          orElse: () => JadwalMasuk.empty(),
+                        );
 
                         controller.namaUsahaC.text =
                             selectedData.namaPerusahaan;
@@ -122,6 +124,14 @@ class CreateJadwal extends StatelessWidget {
                         controller.jumlahLimbahC.text =
                             selectedData.jumlahLimbah;
                         controller.telpC.text = selectedData.noTelp;
+                        controller.penanggungJawabC.text =
+                            selectedData.penanggungJawab;
+                      }
+                    },
+                    onMenuStateChange: (isOpen) {
+                      if (isOpen) {
+                        controller
+                            .fetchFilteredJadwalMasuk(); // ✅ Fetch data saat dropdown dibuka
                       }
                     },
                   )),
@@ -264,6 +274,18 @@ class CreateJadwal extends StatelessWidget {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'No Telp is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 8.0),
+              Text('Penanggung Jawab'),
+              TextFormField(
+                controller: controller.penanggungJawabC,
+                readOnly: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Penanggung Jawab is required';
                   }
                   return null;
                 },

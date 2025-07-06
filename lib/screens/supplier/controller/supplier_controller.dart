@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../constant/storage_util.dart';
 import '../../../models/jadwal_masuk.dart';
@@ -91,8 +92,10 @@ class SupplierController extends GetxController {
 
   void updateTotalHarga() {
     totalHarga.value = jumlahLimbahPerSatuan.value * hargaPerSatuan.value;
-    hargaC.text = totalHarga.value.toInt().toString();
-    // Pastikan hargaC diperbarui
+
+    final formatter =
+        NumberFormat.decimalPattern('id'); // Format 1.000, 10.000 dst
+    hargaC.text = formatter.format(totalHarga.value.toInt());
   }
 
   Future<void> fetchKategoriBarang() async {

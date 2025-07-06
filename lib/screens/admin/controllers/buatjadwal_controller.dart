@@ -25,6 +25,7 @@ class BuatjadwalController extends GetxController {
   final platNomorC = TextEditingController();
   final telpC = TextEditingController();
   final waktuC = TextEditingController();
+  final penanggungJawabC = TextEditingController();
 
   @override
   void onInit() {
@@ -114,23 +115,47 @@ class BuatjadwalController extends GetxController {
         return;
       }
 
-      final newBerita = Event(
-          alamat: alamatC.text.trim(),
-          driver: driverC.text.trim(),
-          harga: hargaC.text.trim(),
-          jenisLimbah: jenisLimbahC.text.trim(),
-          jumlahLimbah: jumlahLimbahC.text.trim(),
-          namaUsaha: namaUsahaC.text.trim(),
-          platNomer: platNomorC.text.trim(),
-          status: '0',
-          date: tgl.value,
-          telp: telpC.text.trim(),
-          waktu: waktuC.text.trim(),
-          createdAt: Timestamp.now());
+      // Cek apakah Nama_Driver ada di collection MasterDriver
+      final driverName = driverC.text.trim();
+      final driverDoc = await FirebaseFirestore.instance
+          .collection('MasterDriver')
+          .where('Nama_Driver', isEqualTo: driverName)
+          .limit(1)
+          .get();
 
+      if (driverDoc.docs.isNotEmpty) {
+        // Nama_Driver ditemukan, update Status_Pengangkutan menjadi "1"
+        final driverId = driverDoc.docs.first.id;
+        await FirebaseFirestore.instance
+            .collection('MasterDriver')
+            .doc(driverId)
+            .update({
+          'Status_Pengangkutan': '1', // Update field Status_Pengangkutan
+        });
+      }
+
+      // Buat event baru jika driver ditemukan atau tidak ditemukan
+      final newBerita = Event(
+        alamat: alamatC.text.trim(),
+        driver: driverC.text.trim(),
+        harga: hargaC.text.trim(),
+        jenisLimbah: jenisLimbahC.text.trim(),
+        jumlahLimbah: jumlahLimbahC.text.trim(),
+        namaUsaha: namaUsahaC.text.trim(),
+        platNomer: platNomorC.text.trim(),
+        status: '0',
+        date: tgl.value,
+        telp: telpC.text.trim(),
+        waktu: waktuC.text.trim(),
+        penanggungJawab: penanggungJawabC.text.trim(),
+        createdAt: Timestamp.now(),
+      );
+
+      // Simpan berita baru ke Firestore
       await saveBeritaNew(newBerita);
       resetEditState();
       await fetchJadwal();
+      await fetchFilteredJadwalMasuk();
 
       Navigator.of(Get.overlayContext!).pop();
 
@@ -190,6 +215,7 @@ class BuatjadwalController extends GetxController {
 
       await _db.collection('BuatJadwal').doc(id).update(newBerita);
       await fetchJadwal();
+      await fetchFilteredJadwalMasuk();
 
       Navigator.of(Get.overlayContext!).pop();
 
@@ -220,6 +246,7 @@ class BuatjadwalController extends GetxController {
 
       await _db.collection('BuatJadwal').doc(id).delete();
       userList.removeWhere((item) => item.id == id);
+      await fetchFilteredJadwalMasuk();
       Navigator.of(Get.overlayContext!).pop();
 
       SnackbarLoader.successSnackBar(

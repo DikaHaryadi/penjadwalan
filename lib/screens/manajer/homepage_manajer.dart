@@ -23,8 +23,21 @@ class _HomepageManajerState extends State<HomepageManajer> {
   @override
   Widget build(BuildContext context) {
     final storageUtil = StorageUtil();
-    final selectedTabLogin = ValueNotifier(_Tab.suplier);
+    final selectedTabLogin = ValueNotifier(_Tab.belumDisetujui);
     final tableController = Get.put(TableEventsController());
+
+    String getStatusText(String status) {
+      if (status == '0') return 'Meminta Persetujuan';
+      if (status == '1') return 'Sudah Disetujui';
+      if (status == '2' || status == '3') return 'Selesai Diantar';
+      return 'Status Tidak Dikenal';
+    }
+
+    Color getStatusColor(String status) {
+      if (status == '0') return AppColors.error;
+      return Colors.green;
+    }
+
     return SafeArea(
       child: ListView(
         children: [
@@ -132,11 +145,11 @@ class _HomepageManajerState extends State<HomepageManajer> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            selectedTabLogin.value = _Tab.suplier;
+                            selectedTabLogin.value = _Tab.belumDisetujui;
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: value == _Tab.suplier
+                              color: value == _Tab.belumDisetujui
                                   ? Colors.green
                                   : Colors.transparent,
                               borderRadius: BorderRadius.zero,
@@ -145,7 +158,7 @@ class _HomepageManajerState extends State<HomepageManajer> {
                             child: Text(
                               "Belum Disetujui",
                               style: TextStyle(
-                                color: value == _Tab.suplier
+                                color: value == _Tab.belumDisetujui
                                     ? Colors.white
                                     : Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -157,11 +170,11 @@ class _HomepageManajerState extends State<HomepageManajer> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            selectedTabLogin.value = _Tab.driver;
+                            selectedTabLogin.value = _Tab.sudahDisetujui;
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: value == _Tab.driver
+                              color: value == _Tab.sudahDisetujui
                                   ? Colors.green
                                   : Colors.transparent,
                               borderRadius: BorderRadius.zero,
@@ -170,7 +183,33 @@ class _HomepageManajerState extends State<HomepageManajer> {
                             child: Text(
                               "Sudah Disetujui",
                               style: TextStyle(
-                                color: value == _Tab.driver
+                                color: value == _Tab.sudahDisetujui
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            selectedTabLogin.value = _Tab.finish;
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: value == _Tab.finish
+                                  ? Colors.green
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.zero,
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Selesai Diantar",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: value == _Tab.finish
                                     ? Colors.white
                                     : Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -190,8 +229,13 @@ class _HomepageManajerState extends State<HomepageManajer> {
             valueListenable: selectedTabLogin,
             builder: (context, value, child) {
               return FutureBuilder<List<Event>>(
-                future: tableController
-                    .getEventsByStatus(value == _Tab.suplier ? '0' : '1'),
+                future: tableController.getEventsByStatus(
+                  value == _Tab.belumDisetujui
+                      ? ['0']
+                      : value == _Tab.sudahDisetujui
+                          ? ['1']
+                          : ['2', '3'], // _Tab.finish
+                ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -207,8 +251,20 @@ class _HomepageManajerState extends State<HomepageManajer> {
                       itemCount: jadwalList!.length,
                       itemBuilder: (context, index) {
                         var jadwal = jadwalList[index];
-                        if ((value == _Tab.suplier && jadwal.status == '0') ||
-                            (value == _Tab.driver && jadwal.status == '1')) {
+                        final isValid = (value == _Tab.belumDisetujui &&
+                                jadwal.status == '0') ||
+                            (value == _Tab.sudahDisetujui &&
+                                jadwal.status == '1') ||
+                            (value == _Tab.finish &&
+                                (jadwal.status == '2' || jadwal.status == '3'));
+
+                        if (isValid) {
+                          // tampilkan kartu
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+
+                        if (isValid) {
                           return GestureDetector(
                             onTap: () {
                               if (jadwal.status == '0') {
@@ -335,19 +391,15 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                             Align(
                                               alignment: Alignment.centerRight,
                                               child: Text(
-                                                jadwal.status == '0'
-                                                    ? 'Meminta Persetujuan'
-                                                    : 'Sudah Disetujui',
+                                                getStatusText(jadwal.status),
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium
                                                     ?.copyWith(
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      color:
-                                                          jadwal.status == '0'
-                                                              ? AppColors.error
-                                                              : Colors.green,
+                                                      color: getStatusColor(
+                                                          jadwal.status),
                                                     ),
                                               ),
                                             ),
@@ -371,12 +423,48 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                                   ),
                                                 ),
                                                 ElevatedButton(
-                                                  onPressed: () async {
-                                                    await tableController
-                                                        .editStatusByManajer(
-                                                            jadwal.id!,
-                                                            jadwal.status);
-                                                    setState(() {});
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          AlertDialog(
+                                                        title: const Text(
+                                                            'Konfirmasi Persetujuan'),
+                                                        content: const Text(
+                                                            'Apakah Anda yakin ingin menyetujui jadwal ini?'),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(), // Batal
+                                                            child: const Text(
+                                                                'Batal'),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed:
+                                                                () async {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Tutup dialog
+                                                              await tableController
+                                                                  .editStatusByManajer(
+                                                                      jadwal
+                                                                          .id!,
+                                                                      jadwal
+                                                                          .status);
+                                                              setState(() {});
+                                                            },
+                                                            child: const Text(
+                                                              'Setujui',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .green),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
                                                   },
                                                   style:
                                                       ElevatedButton.styleFrom(
@@ -479,17 +567,14 @@ class _HomepageManajerState extends State<HomepageManajer> {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: Text(
-                                        jadwal.status == '0'
-                                            ? 'Meminta Persetujuan'
-                                            : 'Sudah Disetujui',
+                                        getStatusText(jadwal.status),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium
                                             ?.copyWith(
                                               fontWeight: FontWeight.bold,
-                                              color: jadwal.status == '0'
-                                                  ? AppColors.error
-                                                  : Colors.green,
+                                              color:
+                                                  getStatusColor(jadwal.status),
                                             ),
                                       ),
                                     ),
@@ -515,4 +600,4 @@ class _HomepageManajerState extends State<HomepageManajer> {
   }
 }
 
-enum _Tab { suplier, driver }
+enum _Tab { belumDisetujui, sudahDisetujui, finish }

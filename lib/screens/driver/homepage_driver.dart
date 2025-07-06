@@ -79,7 +79,10 @@ class HomepageDriver extends StatelessWidget {
               rangeEndDay: controller.rangeEnd.value,
               calendarFormat: controller.calendarFormat.value,
               rangeSelectionMode: controller.rangeSelectionMode.value,
-              eventLoader: controller.getEventsForDay,
+              eventLoader: (day) {
+                print('Loading events for $day');
+                return controller.getEventsForDay(day);
+              },
               startingDayOfWeek: StartingDayOfWeek.monday,
               calendarStyle: CalendarStyle(
                 outsideDaysVisible: false,
@@ -378,6 +381,21 @@ class HomepageDriver extends StatelessWidget {
                                                 subtitle:
                                                     Text(events.platNomer),
                                               ),
+                                              ListTile(
+                                                contentPadding: EdgeInsets.zero,
+                                                title: Text(
+                                                  'Penanggung Jawab',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                    events.penanggungJawab),
+                                              ),
                                               const SizedBox(height: 16.0),
                                               // Status
                                               const Divider(thickness: 1.5),
@@ -652,7 +670,7 @@ class HomepageDriver extends StatelessWidget {
                               Row(
                                 children: [
                                   Text(
-                                    'Driver',
+                                    'Driver123',
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium
@@ -678,6 +696,22 @@ class HomepageDriver extends StatelessWidget {
                                   ),
                                   const SizedBox(width: CustomSize.sm),
                                   Text(events.platNomer),
+                                ],
+                              ),
+                              const SizedBox(height: CustomSize.sm),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Penanggung Jawab',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                  const SizedBox(width: CustomSize.sm),
+                                  Text(events.penanggungJawab),
                                 ],
                               ),
                               const SizedBox(height: CustomSize.md),

@@ -375,7 +375,7 @@ class HomeSupplier extends StatelessWidget {
                                   children: [
                                     RichText(
                                       text: TextSpan(
-                                        text: 'Jumlah Limbah',
+                                        text: 'Penanggung Jawab',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall,
@@ -391,7 +391,7 @@ class HomeSupplier extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      jadwal.jenisLimbah,
+                                      jadwal.penanggungJawab,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium
